@@ -13,3 +13,5 @@ dependencies:
   - matplotlib
   - mayavi
   - fipytrilinos
+  - pip:
+    - -e .
