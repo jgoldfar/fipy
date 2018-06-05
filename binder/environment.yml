@@ -14,4 +14,4 @@ dependencies:
   - mayavi
   - fipytrilinos
   - pip:
-    - -e ..
+    - "--editable=./"
