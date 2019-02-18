@@ -98,7 +98,7 @@ A 2D version of the 1D example.
 ...     viewers = Viewer(density), Viewer(velocityVector), Viewer(potentialNC)
 ...     for viewer in viewers:
 ...         viewer.plot()
-...     raw_input('arrange viewers')
+...     input('arrange viewers')
 ...     for viewer in viewers:
 ...         viewer.plot()
 
@@ -116,17 +116,17 @@ A 2D version of the 1D example.
 ...     totalSweeps = 1
 
 >>> while timestep < totalSteps:
-...
+... 
 ...     sweep = 0
 ...     dt *= 1.1
 ...     residual = 1.
 ...     initialResidual = None
-...
+... 
 ...     density.updateOld()
 ...     velocityX.updateOld()
 ...     velocityY.updateOld()
 ...     matrixDiagonal.updateOld()
-...
+... 
 ...     while residual > tolerance  and sweeps < totalSweeps:
 ...         sweeps += 1
 ...         densityPrevious[:] = density
@@ -135,17 +135,17 @@ A 2D version of the 1D example.
 ...         previousResidual = residual
 ...         velocityVector[0] = velocityX
 ...         velocityVector[1] = velocityY
-...
+... 
 ...         dt = min(dt, dx / max(abs(velocityVector.mag)) * cfl)
-...
+... 
 ...         coupledEqn.cacheMatrix()
 ...         residual = coupledEqn.sweep(dt=dt)
-...
+... 
 ...         if initialResidual is None:
 ...             initialResidual = residual
-...
+... 
 ...         residual = residual / initialResidual
-...
+... 
 ...         if residual > previousResidual * 1.1 or sweep > 20:
 ...             density[:] = density.old
 ...             velocityX[:] = velocityX.old
@@ -153,7 +153,7 @@ A 2D version of the 1D example.
 ...             matrixDiagonal[:] = matrixDiagonal.old
 ...             dt = dt / 10.
 ...             if __name__ == '__main__':
-...                 print 'Recalculate the time step'
+...                 print('Recalculate the time step')
 ...             timestep -= 1
 ...             break
 ...         else:
@@ -161,18 +161,18 @@ A 2D version of the 1D example.
 ...             density[:] = relaxation * density + (1 - relaxation) * densityPrevious
 ...             velocityX[:] = relaxation * velocityX + (1 - relaxation) * velocityXPrevious
 ...             velocityY[:] = relaxation * velocityY + (1 - relaxation) * velocityYPrevious
-...
+... 
 ...         sweep += 1
-...
+... 
 ...     if __name__ == '__main__' and timestep % 1 == 0:
-...         print 'timestep: %e / %e, dt: %1.5e, free energy: %1.5e' % (timestep, totalSteps, dt, freeEnergy)
+...         print('timestep: %e / %e, dt: %1.5e, free energy: %1.5e' % (timestep, totalSteps, dt, freeEnergy))
 ...         for viewer in viewers:
 ...             viewer.plot()
-...
+... 
 ...     timestep += 1
 
 >>> if __name__ == '__main__':
-...     raw_input('finished')
+...     input('finished')
 
 """
 
@@ -181,3 +181,4 @@ __docformat__ = 'restructuredtext'
 if __name__ == '__main__':
     import fipy.tests.doctestPlus
     exec(fipy.tests.doctestPlus._getScript())
+

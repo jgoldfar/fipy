@@ -1,6 +1,8 @@
 """
 1D Mesh
 """
+
+from past.utils import old_div
 __docformat__ = 'restructuredtext'
 
 from fipy.tools import numerix
@@ -20,7 +22,7 @@ class UniformGrid1D(UniformGrid):
     Creates a 1D grid mesh.
 
         >>> mesh = UniformGrid1D(nx = 3)
-        >>> print mesh.cellCenters
+        >>> print(mesh.cellCenters)
         [[ 0.5  1.5  2.5]]
 
     """
@@ -290,13 +292,13 @@ class UniformGrid1D(UniformGrid):
 
            >>> from fipy import *
            >>> m = Grid1D(nx=3)
-           >>> print m._getNearestCellID(([0., .9, 3.],))
+           >>> print(m._getNearestCellID(([0., .9, 3.],)))
            [0 0 2]
-           >>> print m._getNearestCellID(([1.1],))
+           >>> print(m._getNearestCellID(([1.1],)))
            [1]
            >>> m0 = Grid1D(nx=2, dx=1.)
            >>> m1 = Grid1D(nx=4, dx=.5)
-           >>> print m0._getNearestCellID(m1.cellCenters.globalValue)
+           >>> print(m0._getNearestCellID(m1.cellCenters.globalValue))
            [0 0 1 1]
 
         """
@@ -309,7 +311,7 @@ class UniformGrid1D(UniformGrid):
         xi, = points
         dx = self.dx
 
-        i = numerix.array(numerix.rint(((xi - x0) / dx)), 'l')
+        i = numerix.array(numerix.rint((old_div((xi - x0), dx))), 'l')
         i[i < 0] = 0
         i[i > nx - 1] = nx - 1
 
@@ -333,3 +335,4 @@ def _test():
 
 if __name__ == "__main__":
     _test()
+

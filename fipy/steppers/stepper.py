@@ -1,8 +1,9 @@
+from builtins import object
 __docformat__ = 'restructuredtext'
 
 __all__ = ["Stepper"]
 
-class Stepper:
+class Stepper(object):
     def __init__(self, vardata=()):
         self.vardata = vardata
 

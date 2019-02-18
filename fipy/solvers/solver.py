@@ -11,6 +11,10 @@ can abort whenever it has problems with::
     $ python -Werror::fipy.PreconditionerWarning myscript.py
 
 """
+
+from builtins import str
+from builtins import object
+from past.utils import old_div
 __docformat__ = 'restructuredtext'
 
 from fipy.tools import numerix
@@ -94,7 +98,7 @@ class Solver(object):
 
     def _applyUnderRelaxation(self, underRelaxation=None):
         if underRelaxation is not None:
-            self.matrix.putDiagonal(numerix.asarray(self.matrix.takeDiagonal()) / underRelaxation)
+            self.matrix.putDiagonal(old_div(numerix.asarray(self.matrix.takeDiagonal()), underRelaxation))
             self.RHSvector += (1 - underRelaxation) * self.matrix.takeDiagonal() * numerix.array(self.var).flatten()
 
     def _calcResidualVector(self, residualFn=None):

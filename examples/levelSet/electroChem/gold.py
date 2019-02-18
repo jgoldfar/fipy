@@ -71,10 +71,10 @@ __docformat__ = 'restructuredtext'
 
 from fipy import CellVariable, SurfactantVariable, TransientTerm, FirstOrderAdvectionTerm, MultiViewer, Viewer
 from fipy.tools import numerix
-from trenchMesh import TrenchMesh
-from gapFillDistanceVariable  import GapFillDistanceVariable
-from metalIonDiffusionEquation import buildMetalIonDiffusionEquation
-from adsorbingSurfactantEquation import AdsorbingSurfactantEquation
+from .trenchMesh import TrenchMesh
+from .gapFillDistanceVariable  import GapFillDistanceVariable
+from .metalIonDiffusionEquation import buildMetalIonDiffusionEquation
+from .adsorbingSurfactantEquation import AdsorbingSurfactantEquation
 
 def runGold(faradaysConstant=9.6e4,
             consumptionRateConstant=2.6e+6,
@@ -156,7 +156,7 @@ def runGold(faradaysConstant=9.6e4,
     if displayViewers:
 
         try:
-            from mayaviSurfactantViewer import MayaviSurfactantViewer
+            from .mayaviSurfactantViewer import MayaviSurfactantViewer
             viewer = MayaviSurfactantViewer(distanceVar, catalystVar.interfaceVar, zoomFactor = 1e6, datamax=1.0, datamin=0.0, smooth = 1, title = 'catalyst coverage', animate=True)
 
         except:
@@ -208,4 +208,4 @@ __all__ = ["runGold"]
 
 if __name__ == '__main__':
     runGold(numberOfSteps = 300, cellSize = 0.05e-7, displayViewers=False)
-    raw_input("finished")
+    input("finished")

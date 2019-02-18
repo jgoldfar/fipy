@@ -1,3 +1,5 @@
+
+from past.utils import old_div
 __docformat__ = 'restructuredtext'
 
 __all__ = []
@@ -16,7 +18,7 @@ class _CellVolumeAverageVariable(Variable):
         >>> mesh = Grid2D(nx = 2, ny = 2, dx = 2., dy = 5.)
         >>> from fipy.variables.cellVariable import CellVariable
         >>> var = CellVariable(value = (1, 2, 3 ,4), mesh = mesh)
-        >>> print _CellVolumeAverageVariable(var)
+        >>> print(_CellVolumeAverageVariable(var))
         2.5
 
     """
@@ -27,7 +29,7 @@ class _CellVolumeAverageVariable(Variable):
     def _calcValue(self):
         mesh = self.var.mesh
         volumes = CellVariable(mesh=mesh, value=mesh.cellVolumes)
-        return (self.var * volumes).sum() / volumes.sum()
+        return old_div((self.var * volumes).sum(), volumes.sum())
 
 def _test():
     import fipy.tests.doctestPlus
@@ -35,3 +37,4 @@ def _test():
 
 if __name__ == "__main__":
     _test()
+

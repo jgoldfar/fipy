@@ -1,3 +1,4 @@
+from builtins import object
 __docformat__ = 'restructuredtext'
 
 __all__ = ["Constraint"]

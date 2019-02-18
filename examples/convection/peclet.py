@@ -45,10 +45,10 @@ for :class:`~fipy.terms.convectionTerm.ConvectionTerm`. For ``nx = 1000`` the :c
 ...     allcloseList.append(var.allclose(CC / DD, rtol = 1e-2, atol = 1e-2).value)
 ...     if __name__ == '__main__':
 ...         viewer.plot()
-...         raw_input("Peclet number: " + str(peclet) + ", press key")
+...         input("Peclet number: " + str(peclet) + ", press key")
 ...     peclet *= 10
 
->>> print allcloseList
+>>> print(allcloseList)
 [True, True, True, True, True, True, True]
 
 """
@@ -57,3 +57,4 @@ __docformat__ = 'restructuredtext'
 if __name__ == '__main__':
     import fipy.tests.doctestPlus
     exec(fipy.tests.doctestPlus._getScript())
+

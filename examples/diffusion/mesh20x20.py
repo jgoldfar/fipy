@@ -70,11 +70,11 @@ and solve the equation by repeatedly looping in time:
 
 We can test the value of the bottom-right corner cell.
 
->>> print numerix.allclose(phi(((L,), (0,))), valueBottomRight, atol = 1e-2)
+>>> print(numerix.allclose(phi(((L,), (0,))), valueBottomRight, atol = 1e-2))
 1
 
 >>> if __name__ == '__main__':
-...     raw_input("Implicit transient diffusion. Press <return> to proceed...")
+...     input("Implicit transient diffusion. Press <return> to proceed...")
 
 -----
 
@@ -91,11 +91,11 @@ We can also solve the steady-state problem directly
 
 and test the value of the bottom-right corner cell.
 
->>> print numerix.allclose(phi(((L,), (0,))), valueBottomRight, atol = 1e-2)
+>>> print(numerix.allclose(phi(((L,), (0,))), valueBottomRight, atol = 1e-2))
 1
 
 >>> if __name__ == '__main__':
-...     raw_input("Implicit steady-state diffusion. Press <return> to proceed...")
+...     input("Implicit steady-state diffusion. Press <return> to proceed...")
 """
 
 __docformat__ = 'restructuredtext'
@@ -106,3 +106,4 @@ __docformat__ = 'restructuredtext'
 if __name__ == '__main__':
     import fipy.tests.doctestPlus
     exec(fipy.tests.doctestPlus._getScript())
+

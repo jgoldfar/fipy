@@ -1,3 +1,5 @@
+
+from past.utils import old_div
 __docformat__ = 'restructuredtext'
 
 __all__ = ["AdvectionTerm"]
@@ -64,21 +66,21 @@ class AdvectionTerm(FirstOrderAdvectionTerm):
     >>> from fipy.variables.cellVariable import CellVariable
     >>> coeff = CellVariable(mesh = mesh, value = numerix.zeros(3, 'd'))
     >>> v, L, b = AdvectionTerm(0.)._buildMatrix(coeff, SparseMatrix)
-    >>> print numerix.allclose(b, numerix.zeros(3, 'd'), atol = 1e-10) # doctest: +PROCESSOR_0
+    >>> print(numerix.allclose(b, numerix.zeros(3, 'd'), atol = 1e-10)) # doctest: +PROCESSOR_0
     True
 
     Less trivial test:
 
     >>> coeff = CellVariable(mesh = mesh, value = numerix.arange(3))
     >>> v, L, b = AdvectionTerm(1.)._buildMatrix(coeff, SparseMatrix)
-    >>> print numerix.allclose(b, numerix.array((0., -1., -1.)), atol = 1e-10) # doctest: +PROCESSOR_0
+    >>> print(numerix.allclose(b, numerix.array((0., -1., -1.)), atol = 1e-10)) # doctest: +PROCESSOR_0
     True
 
     Even less trivial
 
     >>> coeff = CellVariable(mesh = mesh, value = numerix.arange(3))
     >>> v, L, b = AdvectionTerm(-1.)._buildMatrix(coeff, SparseMatrix)
-    >>> print numerix.allclose(b, numerix.array((1., 1., 0.)), atol = 1e-10) # doctest: +PROCESSOR_0
+    >>> print(numerix.allclose(b, numerix.array((1., 1., 0.)), atol = 1e-10)) # doctest: +PROCESSOR_0
     True
 
     Another trivial test case (more trivial than a trivial test case
@@ -87,7 +89,7 @@ class AdvectionTerm(FirstOrderAdvectionTerm):
     >>> vel = numerix.array((-1, 2, -3))
     >>> coeff = CellVariable(mesh = mesh, value = numerix.array((4,6,1)))
     >>> v, L, b = AdvectionTerm(vel)._buildMatrix(coeff, SparseMatrix)
-    >>> print numerix.allclose(b, -vel * numerix.array((2, numerix.sqrt(5**2 + 2**2), 5)), atol = 1e-10) # doctest: +PROCESSOR_0
+    >>> print(numerix.allclose(b, -vel * numerix.array((2, numerix.sqrt(5**2 + 2**2), 5)), atol = 1e-10)) # doctest: +PROCESSOR_0
     True
 
     Somewhat less trivial test case:
@@ -98,7 +100,7 @@ class AdvectionTerm(FirstOrderAdvectionTerm):
     >>> coeff = CellVariable(mesh = mesh, value = numerix.array((3 , 1, 6, 7)))
     >>> v, L, b = AdvectionTerm(vel)._buildMatrix(coeff, SparseMatrix)
     >>> answer = -vel * numerix.array((2, numerix.sqrt(2**2 + 6**2), 1, 0))
-    >>> print numerix.allclose(b, answer, atol = 1e-10) # doctest: +PROCESSOR_0
+    >>> print(numerix.allclose(b, answer, atol = 1e-10)) # doctest: +PROCESSOR_0
     True
 
     For the above test cases the `AdvectionTerm` gives the
@@ -125,15 +127,15 @@ class AdvectionTerm(FirstOrderAdvectionTerm):
     The first order term is not accurate. The first and last element are ignored because they
     don't have any neighbors for higher order evaluation
 
-    >>> print numerix.allclose(CellVariable(mesh=mesh,
-    ... value=b).globalValue[1:-1], -2 * mesh.cellCenters.globalValue[0][1:-1])
+    >>> print(numerix.allclose(CellVariable(mesh=mesh,
+    ... value=b).globalValue[1:-1], -2 * mesh.cellCenters.globalValue[0][1:-1]))
     False
 
     The higher order term is spot on.
 
     >>> v, L, b = AdvectionTerm(vel)._buildMatrix(coeff, SparseMatrix)
-    >>> print numerix.allclose(CellVariable(mesh=mesh,
-    ... value=b).globalValue[1:-1], -2 * mesh.cellCenters.globalValue[0][1:-1])
+    >>> print(numerix.allclose(CellVariable(mesh=mesh,
+    ... value=b).globalValue[1:-1], -2 * mesh.cellCenters.globalValue[0][1:-1]))
     True
 
     The `AdvectionTerm` will also resolve a circular field with
@@ -154,7 +156,7 @@ class AdvectionTerm(FirstOrderAdvectionTerm):
     >>> error = CellVariable(mesh=mesh, value=b + 1)
     >>> ans = CellVariable(mesh=mesh, value=b + 1)
     >>> ans[(x > 2) & (x < 8) & (y > 2) & (y < 8)] = 0.123105625618
-    >>> print (error <= ans).all()
+    >>> print((error <= ans).all())
     True
 
     The maximum error is large (about 12 %) for the first order advection.
@@ -163,7 +165,7 @@ class AdvectionTerm(FirstOrderAdvectionTerm):
     >>> error = CellVariable(mesh=mesh, value=b + 1)
     >>> ans = CellVariable(mesh=mesh, value=b + 1)
     >>> ans[(x > 2) & (x < 8) & (y > 2) & (y < 8)] = 0.0201715476598
-    >>> print (error <= ans).all()
+    >>> print((error <= ans).all())
     True
 
     The maximum error is 2 % when using a higher order contribution.
@@ -185,9 +187,9 @@ class AdvectionTerm(FirstOrderAdvectionTerm):
         cellNormalGradient = numerix.dot(cellGradient, mesh._cellNormals)
         cellUpValues = adjacentValues - 2 * dAP * cellNormalGradient
 
-        cellLaplacian = (cellUpValues + adjacentValues - 2 * cellValues) / dAP**2
+        cellLaplacian = old_div((cellUpValues + adjacentValues - 2 * cellValues), dAP**2)
 
-        adjacentLaplacian = (adjacentUpValues + cellValues - 2 * adjacentValues) / dAP**2
+        adjacentLaplacian = old_div((adjacentUpValues + cellValues - 2 * adjacentValues), dAP**2)
         adjacentLaplacian = adjacentLaplacian.filled(0)
         cellLaplacian = cellLaplacian.filled(0)
 
@@ -211,3 +213,4 @@ def _test():
 
 if __name__ == "__main__":
     _test()
+

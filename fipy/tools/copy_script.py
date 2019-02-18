@@ -1,4 +1,5 @@
-from __future__ import print_function
+
+from builtins import input
 import os
 from distutils.core import Command
 
@@ -32,13 +33,13 @@ class Copy_script(Command):
             ans = "junk"
 
             while (len(ans) > 0) and ("yes".find(ans.lower()) is not 0) and ("no".find(ans.lower()) is not 0):
-                ans = raw_input("The file '%s' already exists. Overwrite? [n] "%self.To)
+                ans = eval(input("The file '%s' already exists. Overwrite? [n] "%self.To))
 
             if ans is '':
                 ans = 'no'
 
             if ("no".find(ans.lower()) is 0):
-                self.To = raw_input("Please give a name for the ouput file: ")
+                self.To = eval(input("Please give a name for the ouput file: "))
                 self.finalize_options()
 
     def run(self):

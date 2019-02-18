@@ -69,7 +69,7 @@ The result can be tested with the following code:
 >>> answer = x - interfacePosition - timeStepDuration * steps * velocity
 >>> answer = numerix.where(x < distanceTravelled,
 ...                        x[0] - interfacePosition, answer)
->>> print var.allclose(answer) #doctest: +LSM
+>>> print(var.allclose(answer)) #doctest: +LSM
 1
 
 """
@@ -78,4 +78,5 @@ __docformat__ = 'restructuredtext'
 if __name__ == '__main__':
     import fipy.tests.doctestPlus
     exec(fipy.tests.doctestPlus._getScript())
-    raw_input("finished")
+    input("finished")
+

@@ -1,3 +1,5 @@
+
+from past.utils import old_div
 __docformat__ = 'restructuredtext'
 
 __all__ = []
@@ -116,7 +118,7 @@ class _AbstractConvectionTerm(FaceTerm):
         ...  - ConvectionTerm(coeff=[[1]])
         ...  - ImplicitSourceTerm(coeff=m.x)).solve(v, dt=1.)
 
-        >>> print numerix.allclose(v, v0)
+        >>> print(numerix.allclose(v, v0))
         True
 
         """
@@ -133,8 +135,8 @@ class _AbstractConvectionTerm(FaceTerm):
                 peclet = pecletLarge
             else:
                 diffCoeff = diffusionGeomCoeff[0].numericValue
-                diffCoeff = diffCoeff - (diffCoeff == 0) * geomCoeff / pecletLarge
-                peclet = -geomCoeff / diffCoeff
+                diffCoeff = diffCoeff - old_div((diffCoeff == 0) * geomCoeff, pecletLarge)
+                peclet = old_div(-geomCoeff, diffCoeff)
 
             alpha = self._alpha(peclet)
 
@@ -194,3 +196,4 @@ def _test():
 
 if __name__ == "__main__":
     _test()
+

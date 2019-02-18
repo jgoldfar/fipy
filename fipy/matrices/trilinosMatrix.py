@@ -1,3 +1,7 @@
+
+from builtins import str
+from builtins import range
+from past.utils import old_div
 __docformat__ = 'restructuredtext'
 
 __all__ = []
@@ -87,7 +91,7 @@ class _TrilinosMatrix(_SparseMatrix):
 
     @property
     def _range(self):
-        return (range(self.rowMap.NumGlobalElements()), self.rowMap.MyGlobalElements())
+        return (list(range(self.rowMap.NumGlobalElements())), self.rowMap.MyGlobalElements())
 
     def __setitem__(self, index, value):
         self.matrix[index] = value
@@ -112,8 +116,7 @@ class _TrilinosMatrix(_SparseMatrix):
             # Depending on which one is more filled, pick the order of operations
             if self.matrix.Filled() and other.matrix.NumGlobalNonzeros() \
                                             > self.matrix.NumGlobalNonzeros():
-                tempBandwidth = other.matrix.NumGlobalNonzeros() \
-                                 /self.matrix.NumGlobalRows()+1
+                tempBandwidth = old_div(other.matrix.NumGlobalNonzeros(),self.matrix.NumGlobalRows())+1
 
                 tempMatrix = Epetra.CrsMatrix(Epetra.Copy, self.rowMap, tempBandwidth)
 
@@ -162,17 +165,17 @@ class _TrilinosMatrix(_SparseMatrix):
             >>> L = _TrilinosMatrixFromShape(rows=3, cols=3)
             >>> L.addAt((3.,10.,numerix.pi,2.5), (0,0,1,2), (2,1,1,0))
             >>> L.addAt([0,0,0], [0,1,2], [0,1,2])
-            >>> print L + _TrilinosIdentityMatrix(size=3)
+            >>> print(L + _TrilinosIdentityMatrix(size=3))
              1.000000  10.000000   3.000000  
                 ---     4.141593      ---    
              2.500000      ---     1.000000  
 
-            >>> print L + 0
+            >>> print(L + 0)
                 ---    10.000000   3.000000  
                 ---     3.141593      ---    
              2.500000      ---        ---    
 
-            >>> print L + 3
+            >>> print(L + 3)
             Traceback (most recent call last):
             ...
             AttributeError: 'int' object has no attribute 'fillComplete'
@@ -206,19 +209,19 @@ class _TrilinosMatrix(_SparseMatrix):
 
         >>> L = (L1 * L2).numpyArray
 
-        >>> print numerix.allclose(tmp, L) # doctest: +SERIAL
+        >>> print(numerix.allclose(tmp, L)) # doctest: +SERIAL
         True
 
         or a sparse matrix by a vector
 
         >>> tmp = numerix.array((29., 6.28318531, 2.5))
-        >>> print numerix.allclose(L1 * numerix.array((1,2,3),'d'), tmp) # doctest: +SERIAL
+        >>> print(numerix.allclose(L1 * numerix.array((1,2,3),'d'), tmp)) # doctest: +SERIAL
         True
 
         or a vector by a sparse matrix
 
         >>> tmp = numerix.array((7.5, 16.28318531,  3.))
-        >>> print numerix.allclose(numerix.array((1,2,3),'d') * L1, tmp)  # doctest: +SERIAL
+        >>> print(numerix.allclose(numerix.array((1,2,3),'d') * L1, tmp))  # doctest: +SERIAL
         True
 
 
@@ -279,7 +282,7 @@ class _TrilinosMatrix(_SparseMatrix):
 
             >>> L = _TrilinosMatrixFromShape(rows=3, cols=3)
             >>> L.put((3.,10.,numerix.pi,2.5), (0,0,1,2), (2,1,1,0))
-            >>> print L
+            >>> print(L)
                 ---    10.000000   3.000000  
                 ---     3.141593      ---    
              2.500000      ---        ---    
@@ -341,12 +344,12 @@ class _TrilinosMatrix(_SparseMatrix):
 
             >>> L = _TrilinosMatrixFromShape(rows=3, cols=3)
             >>> L.putDiagonal((3.,10.,numerix.pi))
-            >>> print L
+            >>> print(L)
              3.000000      ---        ---    
                 ---    10.000000      ---    
                 ---        ---     3.141593  
             >>> L.putDiagonal((10.,3.))
-            >>> print L
+            >>> print(L)
             10.000000      ---        ---    
                 ---     3.000000      ---    
                 ---        ---     3.141593  
@@ -387,7 +390,7 @@ class _TrilinosMatrix(_SparseMatrix):
             >>> L = _TrilinosMatrixFromShape(rows=3, cols=3)
             >>> L.addAt((3.,10.,numerix.pi,2.5), (0,0,1,2), (2,1,1,0))
             >>> L.addAt((1.73,2.2,8.4,3.9,1.23), (1,2,0,0,1), (2,2,0,0,2))
-            >>> print L
+            >>> print(L)
             12.300000  10.000000   3.000000  
                 ---     3.141593   2.960000  
              2.500000      ---     2.200000  
@@ -488,7 +491,7 @@ class _TrilinosMatrix(_SparseMatrix):
             DistributedMap = Epetra.Map(totalElements, 0, self.comm)
             RootToDist = Epetra.Import(DistributedMap, self.rangeMap)
 
-            DistMatrix = Epetra.CrsMatrix(Epetra.Copy, DistributedMap, self.bandwidth*3/2)
+            DistMatrix = Epetra.CrsMatrix(Epetra.Copy, DistributedMap, old_div(self.bandwidth*3,2))
 
             DistMatrix.Import(self.matrix, RootToDist, Epetra.Insert)
 
@@ -516,7 +519,7 @@ class _TrilinosMatrixFromShape(_TrilinosMatrix):
         """
         size = max(rows, cols)
         if sizeHint is not None and bandwidth == 0:
-            bandwidth = (sizeHint + size - 1) / (size or 1)
+            bandwidth = old_div((sizeHint + size - 1), (size or 1))
         else:
             bandwidth = bandwidth
 
@@ -607,7 +610,7 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
 
     @property
     def _globalCommonColIDs(self):
-        return range(0, self.numberOfVariables, self.mesh.globalNumberOfCells)
+        return list(range(0, self.numberOfVariables, self.mesh.globalNumberOfCells))
 
     @property
     def _globalOverlappingColIDs(self):
@@ -705,13 +708,13 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
 
             >>> L = (L1 * L2).numpyArray
 
-            >>> print numerix.allclose(tmp, L)
+            >>> print(numerix.allclose(tmp, L))
             True
 
         or a sparse matrix by a vector
 
             >>> tmp = numerix.array((29., 6.28318531, 2.5))
-            >>> print numerix.allclose(L1 * numerix.array((1,2,3),'d'), tmp) # doctest: +SERIAL
+            >>> print(numerix.allclose(L1 * numerix.array((1,2,3),'d'), tmp)) # doctest: +SERIAL
             True
 
         or a vector by a sparse matrix
@@ -728,7 +731,7 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
             >>> m = Grid1D(nx=6)
             >>> v0 = CellVariable(mesh=m, value=numerix.arange(m.globalNumberOfCells, dtype=float))
             >>> v1 = CellVariable(mesh=m, value=_TrilinosIdentityMeshMatrix(mesh=m) * v0.value)
-            >>> print numerix.allclose(v0, v1)
+            >>> print(numerix.allclose(v0, v1))
             True
 
         """
@@ -810,11 +813,11 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
 
         0  1  2  3  4  5  6  7  8  9 10 11 12 13 14   _localNonOverlappingColIDs:0
 
-        >>> print numerix.allequal(GOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])  # doctest: +SERIAL
+        >>> print(numerix.allequal(GOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]))  # doctest: +SERIAL
         True
-        >>> print numerix.allequal(GNOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]) # doctest: +SERIAL
+        >>> print(numerix.allequal(GNOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])) # doctest: +SERIAL
         True
-        >>> print numerix.allequal(LNOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]) # doctest: +SERIAL
+        >>> print(numerix.allequal(LNOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])) # doctest: +SERIAL
         True
 
 
@@ -839,11 +842,11 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
 
         0  1  2  3  4  5  6  7  8  9   _localNonOverlappingRowIDs:0
 
-        >>> print numerix.allequal(GOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) # doctest: +SERIAL
+        >>> print(numerix.allequal(GOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])) # doctest: +SERIAL
         True
-        >>> print numerix.allequal(GNOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) # doctest: +SERIAL
+        >>> print(numerix.allequal(GNOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])) # doctest: +SERIAL
         True
-        >>> print numerix.allequal(LNOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) # doctest: +SERIAL
+        >>> print(numerix.allequal(LNOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])) # doctest: +SERIAL
         True
 
 
@@ -877,19 +880,19 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
               2  3  4        7  8  9       12 13 14   _localNonOverlappingColIDs:1
 
 
-        >>> print numerix.allequal(GOC, [0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 13]) # doctest: +PROCESSOR_0_OF_2
+        >>> print(numerix.allequal(GOC, [0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 13])) # doctest: +PROCESSOR_0_OF_2
         True
-        >>> print numerix.allequal(GOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]) # doctest: +PROCESSOR_1_OF_2
-        True
-
-        >>> print numerix.allequal(GNOC, [0, 1, 5, 6, 10, 11]) # doctest: +PROCESSOR_0_OF_2
-        True
-        >>> print numerix.allequal(GNOC, [2, 3, 4, 7, 8, 9, 12, 13, 14]) # doctest: +PROCESSOR_1_OF_2
+        >>> print(numerix.allequal(GOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])) # doctest: +PROCESSOR_1_OF_2
         True
 
-        >>> print numerix.allequal(LNOC, [0, 1, 4, 5, 8, 9]) # doctest: +PROCESSOR_0_OF_2
+        >>> print(numerix.allequal(GNOC, [0, 1, 5, 6, 10, 11])) # doctest: +PROCESSOR_0_OF_2
         True
-        >>> print numerix.allequal(LNOC, [2, 3, 4, 7, 8, 9, 12, 13, 14]) # doctest: +PROCESSOR_1_OF_2
+        >>> print(numerix.allequal(GNOC, [2, 3, 4, 7, 8, 9, 12, 13, 14])) # doctest: +PROCESSOR_1_OF_2
+        True
+
+        >>> print(numerix.allequal(LNOC, [0, 1, 4, 5, 8, 9])) # doctest: +PROCESSOR_0_OF_2
+        True
+        >>> print(numerix.allequal(LNOC, [2, 3, 4, 7, 8, 9, 12, 13, 14])) # doctest: +PROCESSOR_1_OF_2
         True
 
 
@@ -923,19 +926,19 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
               2  3  4        7  8  9   _localNonOverlappingRowIDs:1
 
 
-        >>> print numerix.allequal(GOR, [0, 1, 2, 3, 5, 6, 7, 8]) # doctest: +PROCESSOR_0_OF_2
+        >>> print(numerix.allequal(GOR, [0, 1, 2, 3, 5, 6, 7, 8])) # doctest: +PROCESSOR_0_OF_2
         True
-        >>> print numerix.allequal(GOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) # doctest: +PROCESSOR_1_OF_2
-        True
-
-        >>> print numerix.allequal(GNOR, [0, 1, 5, 6]) # doctest: +PROCESSOR_0_OF_2
-        True
-        >>> print numerix.allequal(GNOR, [2, 3, 4, 7, 8, 9]) # doctest: +PROCESSOR_1_OF_2
+        >>> print(numerix.allequal(GOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])) # doctest: +PROCESSOR_1_OF_2
         True
 
-        >>> print numerix.allequal(LNOR, [0, 1, 4, 5]) # doctest: +PROCESSOR_0_OF_2
+        >>> print(numerix.allequal(GNOR, [0, 1, 5, 6])) # doctest: +PROCESSOR_0_OF_2
         True
-        >>> print numerix.allequal(LNOR, [2, 3, 4, 7, 8, 9]) # doctest: +PROCESSOR_1_OF_2
+        >>> print(numerix.allequal(GNOR, [2, 3, 4, 7, 8, 9])) # doctest: +PROCESSOR_1_OF_2
+        True
+
+        >>> print(numerix.allequal(LNOR, [0, 1, 4, 5])) # doctest: +PROCESSOR_0_OF_2
+        True
+        >>> print(numerix.allequal(LNOR, [2, 3, 4, 7, 8, 9])) # doctest: +PROCESSOR_1_OF_2
         True
 
         >>> matrix = _TrilinosMeshMatrix(mesh=Grid1D(nx=5, communicator=serialComm), numberOfVariables=3, numberOfEquations=2)
@@ -967,11 +970,11 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
 
         0  1  2  3  4  5  6  7  8  9 10 11 12 13 14   _localNonOverlappingColIDs:0
 
-        >>> print numerix.allequal(GOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+        >>> print(numerix.allequal(GOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]))
         True
-        >>> print numerix.allequal(GNOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+        >>> print(numerix.allequal(GNOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]))
         True
-        >>> print numerix.allequal(LNOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+        >>> print(numerix.allequal(LNOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]))
         True
 
 
@@ -996,11 +999,11 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
 
         0  1  2  3  4  5  6  7  8  9   _localNonOverlappingRowIDs:0
 
-        >>> print numerix.allequal(GOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        >>> print(numerix.allequal(GOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
         True
-        >>> print numerix.allequal(GNOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        >>> print(numerix.allequal(GNOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
         True
-        >>> print numerix.allequal(LNOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        >>> print(numerix.allequal(LNOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
         True
 
         >>> matrix = _TrilinosMeshMatrix(mesh=Grid1D(nx=7), numberOfVariables=3, numberOfEquations=2)
@@ -1032,14 +1035,14 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
 
         0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20   _localNonOverlappingColIDs:0
 
-        >>> print numerix.allequal(GOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-        ...                              11, 12, 13, 14, 15, 16, 17, 18, 19, 20]) # doctest: +SERIAL
+        >>> print(numerix.allequal(GOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        ...                              11, 12, 13, 14, 15, 16, 17, 18, 19, 20])) # doctest: +SERIAL
         True
-        >>> print numerix.allequal(GNOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-        ...                               11, 12, 13, 14, 15, 16, 17, 18, 19, 20]) # doctest: +SERIAL
+        >>> print(numerix.allequal(GNOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        ...                               11, 12, 13, 14, 15, 16, 17, 18, 19, 20])) # doctest: +SERIAL
         True
-        >>> print numerix.allequal(LNOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-        ...                               11, 12, 13, 14, 15, 16, 17, 18, 19, 20]) # doctest: +SERIAL
+        >>> print(numerix.allequal(LNOC, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        ...                               11, 12, 13, 14, 15, 16, 17, 18, 19, 20])) # doctest: +SERIAL
         True
 
 
@@ -1064,11 +1067,11 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
 
         0  1  2  3  4  5  6  7  8  9 10 11 12 13   _localNonOverlappingRowIDs:0
 
-        >>> print numerix.allequal(GOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) # doctest: +SERIAL
+        >>> print(numerix.allequal(GOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])) # doctest: +SERIAL
         True
-        >>> print numerix.allequal(GNOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) # doctest: +SERIAL
+        >>> print(numerix.allequal(GNOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])) # doctest: +SERIAL
         True
-        >>> print numerix.allequal(LNOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) # doctest: +SERIAL
+        >>> print(numerix.allequal(LNOR, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])) # doctest: +SERIAL
         True
 
 
@@ -1101,19 +1104,19 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
         0  1  2              5  6  7             10 11 12               _localNonOverlappingColIDs:0
                  2  3  4  5           8  9 10 11          14 15 16 17   _localNonOverlappingColIDs:1
 
-        >>> print numerix.allequal(GOC, [0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18]) # doctest: +PROCESSOR_0_OF_2
+        >>> print(numerix.allequal(GOC, [0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18])) # doctest: +PROCESSOR_0_OF_2
         True
-        >>> print numerix.allequal(GOC, [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20]) # doctest: +PROCESSOR_1_OF_2
-        True
-
-        >>> print numerix.allequal(GNOC, [0, 1, 2, 7, 8, 9, 14, 15, 16]) # doctest: +PROCESSOR_0_OF_2
-        True
-        >>> print numerix.allequal(GNOC, [3, 4, 5, 6, 10, 11, 12, 13, 17, 18, 19, 20]) # doctest: +PROCESSOR_1_OF_2
+        >>> print(numerix.allequal(GOC, [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20])) # doctest: +PROCESSOR_1_OF_2
         True
 
-        >>> print numerix.allequal(LNOC, [0, 1, 2, 5, 6, 7, 10, 11, 12]) # doctest: +PROCESSOR_0_OF_2
+        >>> print(numerix.allequal(GNOC, [0, 1, 2, 7, 8, 9, 14, 15, 16])) # doctest: +PROCESSOR_0_OF_2
         True
-        >>> print numerix.allequal(LNOC, [2, 3, 4, 5, 8, 9, 10, 11, 14, 15, 16, 17]) # doctest: +PROCESSOR_1_OF_2
+        >>> print(numerix.allequal(GNOC, [3, 4, 5, 6, 10, 11, 12, 13, 17, 18, 19, 20])) # doctest: +PROCESSOR_1_OF_2
+        True
+
+        >>> print(numerix.allequal(LNOC, [0, 1, 2, 5, 6, 7, 10, 11, 12])) # doctest: +PROCESSOR_0_OF_2
+        True
+        >>> print(numerix.allequal(LNOC, [2, 3, 4, 5, 8, 9, 10, 11, 14, 15, 16, 17])) # doctest: +PROCESSOR_1_OF_2
         True
 
         7 cells, 2 equations, 2 processors
@@ -1145,19 +1148,19 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
         0  1  2              5  6  7               _localNonOverlappingRowIDs:0
                  2  3  4  5           8  9 10 11   _localNonOverlappingRowIDs:1
 
-        >>> print numerix.allequal(GOR, [0, 1, 2, 3, 4, 7, 8, 9, 10, 11]) # doctest: +PROCESSOR_0_OF_2
+        >>> print(numerix.allequal(GOR, [0, 1, 2, 3, 4, 7, 8, 9, 10, 11])) # doctest: +PROCESSOR_0_OF_2
         True
-        >>> print numerix.allequal(GOR, [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13]) # doctest: +PROCESSOR_1_OF_2
-        True
-
-        >>> print numerix.allequal(GNOR, [0, 1, 2, 7, 8, 9]) # doctest: +PROCESSOR_0_OF_2
-        True
-        >>> print numerix.allequal(GNOR, [3, 4, 5, 6, 10, 11, 12, 13]) # doctest: +PROCESSOR_1_OF_2
+        >>> print(numerix.allequal(GOR, [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13])) # doctest: +PROCESSOR_1_OF_2
         True
 
-        >>> print numerix.allequal(LNOR, [0, 1, 2, 5, 6, 7]) # doctest: +PROCESSOR_0_OF_2
+        >>> print(numerix.allequal(GNOR, [0, 1, 2, 7, 8, 9])) # doctest: +PROCESSOR_0_OF_2
         True
-        >>> print numerix.allequal(LNOR, [2, 3, 4, 5, 8, 9, 10, 11]) # doctest: +PROCESSOR_1_OF_2
+        >>> print(numerix.allequal(GNOR, [3, 4, 5, 6, 10, 11, 12, 13])) # doctest: +PROCESSOR_1_OF_2
+        True
+
+        >>> print(numerix.allequal(LNOR, [0, 1, 2, 5, 6, 7])) # doctest: +PROCESSOR_0_OF_2
+        True
+        >>> print(numerix.allequal(LNOR, [2, 3, 4, 5, 8, 9, 10, 11])) # doctest: +PROCESSOR_1_OF_2
         True
 
 
@@ -1198,25 +1201,25 @@ class _TrilinosMeshMatrix(_TrilinosMatrixFromShape):
               2  3                 8  9                14 15            _localNonOverlappingColIDs:1
                     2  3  4              7  8  9             12 13 14   _localNonOverlappingColIDs:2
 
-        >>> print numerix.allequal(GOC, [0, 1, 2, 3, 7, 8, 9, 10, 14, 15, 16, 17]) # doctest: +PROCESSOR_0_OF_3
+        >>> print(numerix.allequal(GOC, [0, 1, 2, 3, 7, 8, 9, 10, 14, 15, 16, 17])) # doctest: +PROCESSOR_0_OF_3
         True
-        >>> print numerix.allequal(GOC, [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19]) # doctest: +PROCESSOR_1_OF_3
+        >>> print(numerix.allequal(GOC, [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19])) # doctest: +PROCESSOR_1_OF_3
         True
-        >>> print numerix.allequal(GOC, [2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 16, 17, 18, 19, 20]) # doctest: +PROCESSOR_2_OF_3
-        True
-
-        >>> print numerix.allequal(GNOC, [0, 1, 7, 8, 14, 15]) # doctest: +PROCESSOR_0_OF_3
-        True
-        >>> print numerix.allequal(GNOC, [2, 3, 9, 10, 16, 17]) # doctest: +PROCESSOR_1_OF_3
-        True
-        >>> print numerix.allequal(GNOC, [4, 5, 6, 11, 12, 13, 18, 19, 20]) # doctest: +PROCESSOR_2_OF_3
+        >>> print(numerix.allequal(GOC, [2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 16, 17, 18, 19, 20])) # doctest: +PROCESSOR_2_OF_3
         True
 
-        >>> print numerix.allequal(LNOC, [0, 1, 4, 5, 8, 9]) # doctest: +PROCESSOR_0_OF_3
+        >>> print(numerix.allequal(GNOC, [0, 1, 7, 8, 14, 15])) # doctest: +PROCESSOR_0_OF_3
         True
-        >>> print numerix.allequal(LNOC, [2, 3, 8, 9, 14, 15]) # doctest: +PROCESSOR_1_OF_3
+        >>> print(numerix.allequal(GNOC, [2, 3, 9, 10, 16, 17])) # doctest: +PROCESSOR_1_OF_3
         True
-        >>> print numerix.allequal(LNOC, [2, 3, 4, 7, 8, 9, 12, 13, 14]) # doctest: +PROCESSOR_2_OF_3
+        >>> print(numerix.allequal(GNOC, [4, 5, 6, 11, 12, 13, 18, 19, 20])) # doctest: +PROCESSOR_2_OF_3
+        True
+
+        >>> print(numerix.allequal(LNOC, [0, 1, 4, 5, 8, 9])) # doctest: +PROCESSOR_0_OF_3
+        True
+        >>> print(numerix.allequal(LNOC, [2, 3, 8, 9, 14, 15])) # doctest: +PROCESSOR_1_OF_3
+        True
+        >>> print(numerix.allequal(LNOC, [2, 3, 4, 7, 8, 9, 12, 13, 14])) # doctest: +PROCESSOR_2_OF_3
         True
 
 
@@ -1269,7 +1272,7 @@ class _TrilinosIdentityMatrix(_TrilinosMatrixFromShape):
         """
         Create a sparse matrix with '1' in the diagonal
 
-            >>> print _TrilinosIdentityMatrix(size=3)
+            >>> print(_TrilinosIdentityMatrix(size=3))
              1.000000      ---        ---    
                 ---     1.000000      ---    
                 ---        ---     1.000000  
@@ -1285,7 +1288,7 @@ class _TrilinosIdentityMeshMatrix(_TrilinosMeshMatrix):
 
             >>> from fipy import Grid1D
             >>> mesh = Grid1D(nx=3)
-            >>> print _TrilinosIdentityMeshMatrix(mesh=mesh)
+            >>> print(_TrilinosIdentityMeshMatrix(mesh=mesh))
              1.000000      ---        ---    
                 ---     1.000000      ---    
                 ---        ---     1.000000  
@@ -1322,3 +1325,4 @@ def _test():
 
 if __name__ == "__main__":
     _test()
+

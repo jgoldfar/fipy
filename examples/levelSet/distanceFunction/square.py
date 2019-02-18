@@ -34,7 +34,7 @@ Do the tests:
 ...     -3. * dx / 2., -dx / 2., v4              , -dx / 2., -3. * dx / 2.,
 ...     v1           , val     , -dy / 2.        , val     , v1           ,
 ...     v3           , v2      , -3. * dy / 2.   , v2      , v3           ))
->>> print var.allclose(arr) #doctest: +LSM
+>>> print(var.allclose(arr)) #doctest: +LSM
 1
 
 """
@@ -67,4 +67,5 @@ if __name__ == '__main__':
     var.calcDistanceFunction(order=1)
     viewer = Viewer(vars=var, maxval=-5., minval=5.)
     viewer.plot()
-    raw_input('finished')
+    input('finished')
+

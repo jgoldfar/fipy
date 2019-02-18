@@ -29,9 +29,9 @@ def run(startRev):
     os.chdir("../../../trunk/examples")
     for k in revisions[index:3511]:
         revisionNumber = pysvn.Client().update(".", revision=pysvn.Revision(pysvn.opt_revision_kind.number, k))
-        print "pysvn.Client().info('.')['revision'].number: ", pysvn.Client().info('.')['revision'].number
+        print("pysvn.Client().info('.')['revision'].number: ", pysvn.Client().info('.')['revision'].number)
         os.chdir("../../efficiency_test")
-        print 'hello'
+        print('hello')
         test.run()
         os.wait()
         os.chdir("../trunk/examples")

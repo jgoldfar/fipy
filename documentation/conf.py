@@ -48,8 +48,8 @@ source_suffix = '.rst'
 master_doc = 'documentation/contents'
 
 # General information about the project.
-project = u'FiPy'
-copyright = u'works of NIST employees are not not subject to copyright protection'
+project = 'FiPy'
+copyright = 'works of NIST employees are not not subject to copyright protection'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -331,8 +331,8 @@ def skip_numpy_not_numerix(app, what, name, obj, skip, options):
     import types
     if ((type(obj) in [types.FunctionType,
                        types.BuiltinFunctionType,
-                       types.ClassType,
-                       types.TypeType])
+                       type,
+                       type])
         and not (obj.__module__.startswith("fipy")
                  or obj.__module__.startswith("package"))):
             skip = True

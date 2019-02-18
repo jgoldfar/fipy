@@ -1,4 +1,5 @@
-from __future__ import print_function
+
+from builtins import object
 __docformat__ = 'restructuredtext'
 
 __all__ = ["AbstractViewer"]

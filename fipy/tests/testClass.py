@@ -1,4 +1,5 @@
-from __future__ import print_function
+
+from builtins import str
 def _TestClass(base):
     class _test(base):
         description = str(base.description) + ", for FiPy and its examples"

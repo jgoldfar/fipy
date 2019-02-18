@@ -51,7 +51,7 @@ method of the equation.
 
 The result can be tested with the following commands.
 
->>> print numerix.allclose(var, x - dx * nx / 2) #doctest: +LSM
+>>> print(numerix.allclose(var, x - dx * nx / 2)) #doctest: +LSM
 1
 
 """
@@ -60,4 +60,5 @@ __docformat__ = 'restructuredtext'
 if __name__ == '__main__':
     import fipy.tests.doctestPlus
     exec(fipy.tests.doctestPlus._getScript())
-    raw_input("finished")
+    input("finished")
+

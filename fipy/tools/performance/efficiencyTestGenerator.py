@@ -13,7 +13,7 @@ def run(cases, elements):
     for i in range(len(cases)):
         if os.path.exists(toScripts[i]):
             os.remove(toScripts[i])
-        print 'Running on file', cases[i]
+        print('Running on file', cases[i])
 
         DocProg = Copy_script(dummyCommand)
         DocProg.From = cases[i]
@@ -61,7 +61,7 @@ def run(cases, elements):
                 linelist.insert((len(linelist)-1), root_elements)
                 del linelist[len(linelist)-1]
                 newvalue = whitespaces * ' ' + '='.join(linelist) + '\n'
-                print 'newvalue:', newvalue
+                print('newvalue:', newvalue)
                 flist.insert(index, newvalue)
                 del flist[index+1]
             elif ('steps =' in line) or ('totalSteps =' in line):

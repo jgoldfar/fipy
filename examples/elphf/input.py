@@ -57,7 +57,7 @@ We create four components
     ...         self.valence = valence
     ...         self.equation = equation
     ...         CellVariable.__init__(self, mesh = mesh, value = value, name = name, hasOld = hasOld)
-    ...
+    ... 
     ...     def copy(self):
     ...         return self.__class__(mesh = self.mesh, value = self.value,
     ...                               name = self.name,
@@ -168,7 +168,7 @@ and we create the diffusion equation for the solute as in
     ...     for Ck in [Ck for Ck in substitutionals if Ck is not Cj]:
     ...         CkSum += Ck
     ...         CkFaceSum += Ck.harmonicFaceValue
-    ...
+    ... 
     ...     counterDiffusion = CkSum.faceGrad
     ...     # phaseTransformation = (pPrime(phase.harmonicFaceValue) * Cj.standardPotential
     ...     #         + gPrime(phase.harmonicFaceValue) * Cj.barrier) * phase.faceGrad
@@ -180,7 +180,7 @@ and we create the diffusion equation for the solute as in
     ...     convectionCoeff = counterDiffusion + \
     ...         solvent.harmonicFaceValue * (phaseTransformation + electromigration)
     ...     convectionCoeff *= (Cj.diffusivity / (1. - CkFaceSum))
-    ...
+    ... 
     ...     Cj.equation = (TransientTerm()
     ...                    == DiffusionTerm(coeff=Cj.diffusivity)
     ...                    + PowerLawConvectionTerm(coeff=convectionCoeff))
@@ -217,7 +217,7 @@ If running interactively, we create viewers to display the results
     ...     phaseViewer.plot()
     ...     concViewer.plot()
     ...     potentialViewer.plot()
-    ...     raw_input("Press a key to continue")
+    ...     input("Press a key to continue")
 
 Again, this problem does not have an analytical solution, so after
 iterating to equilibrium
@@ -242,31 +242,31 @@ iterating to equilibrium
     >>> ERRCON = 1.89e-4
     >>> desiredTimestep = 1.
     >>> thisTimeStep = 0.
-    >>> print "%3s: %20s | %20s | %20s | %20s" % ("i", "elapsed", "this", "next dt", "residual")
+    >>> print("%3s: %20s | %20s | %20s | %20s" % ("i", "elapsed", "this", "next dt", "residual"))
     >>> residual = 0.
     >>> for i in range(500): # iterate
     ...     if thisTimeStep == 0.:
     ...         tsv.plot(filename = "%s.tsv" % str(elapsed * timeStep))
-    ...
+    ... 
     ...     for field in [phase, potential] + substitutionals + interstitials:
     ...         field.updateOld()
-    ...
+    ... 
     ...     while 1:
     ...         for j in range(10): # sweep
-    ...             print i, j, dt * timeStep, residual
+    ...             print(i, j, dt * timeStep, residual)
     ...             # raw_input()
     ...             residual = 0.
-    ...
+    ... 
     ...             phase.equation.solve(var = phase, dt = dt)
     ...             # print phase.name, phase.equation.residual.max()
     ...             residual = max(phase.equation.residual.max(), residual)
     ...             phase.residual[:] = phase.equation.residual
-    ...
+    ... 
     ...             potential.equation.solve(var = potential, dt = dt)
     ...             # print potential.name, potential.equation.residual.max()
     ...             residual = max(potential.equation.residual.max(), residual)
     ...             potential.residual[:] = potential.equation.residual
-    ...
+    ... 
     ...             for Cj in substitutionals + interstitials:
     ...                 Cj.equation.solve(var = Cj,
     ...                                   dt = dt,
@@ -274,41 +274,41 @@ iterating to equilibrium
     ...                 # print Cj.name, Cj.equation.residual.max()
     ...                 residual = max(Cj.equation.residual.max(), residual)
     ...                 Cj.residual[:] = Cj.equation.residual
-    ...
+    ... 
     ...             # print
     ...             # phaseViewer.plot()
     ...             # concViewer.plot()
     ...             # potentialViewer.plot()
     ...             # residualViewer.plot()
-    ...
+    ... 
     ...         residual /= maxError
     ...         if residual <= 1.:
     ...             break	# step succeeded
-    ...
+    ... 
     ...         dt = max(SAFETY * dt * residual**-0.2, 0.1 * dt)
     ...         if thisTimeStep + dt == thisTimeStep:
     ...             raise FloatingPointError("step size underflow")
-    ...
+    ... 
     ...     thisTimeStep += dt
-    ...
+    ... 
     ...     if residual > ERRCON:
     ...         dt *= SAFETY * residual**-0.2
     ...     else:
     ...         dt *= 5.
-    ...
+    ... 
     ...     # dt *= (maxError / residual)**0.5
-    ...
+    ... 
     ...     if thisTimeStep >= desiredTimestep:
     ...         elapsed += thisTimeStep
     ...         thisTimeStep = 0.
     ...     else:
     ...         dt = min(dt, desiredTimestep - thisTimeStep)
-    ...
+    ... 
     ...     if __name__ == '__main__':
     ...         phaseViewer.plot()
     ...         concViewer.plot()
     ...         potentialViewer.plot()
-    ...         print "%3d: %20s | %20s | %20s | %g" % (i, str(elapsed * timeStep), str(thisTimeStep * timeStep), str(dt * timeStep), residual)
+    ...         print("%3d: %20s | %20s | %20s | %g" % (i, str(elapsed * timeStep), str(thisTimeStep * timeStep), str(dt * timeStep), residual))
 
 
 we confirm that the far-field phases have remained separated
@@ -352,4 +352,5 @@ if __name__ == '__main__':
 
     # profile.stop()
 
-    raw_input("finished")
+    input("finished")
+

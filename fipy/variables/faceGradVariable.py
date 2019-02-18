@@ -1,3 +1,5 @@
+
+from past.utils import old_div
 __docformat__ = 'restructuredtext'
 
 __all__ = []
@@ -22,16 +24,16 @@ class _FaceGradVariable(FaceVariable):
     >>> v2 = CellVariable(mesh=m, value=x**2)
     >>> numerix.allequal(v.faceGrad.globalValue.shape, (2, 3, 24))
     True
-    >>> print v0.faceGrad.allclose([[ 0.5, 1.,  0.5, 0.5, 1.,  0.5, 0.5, 1.,  0.5, 0.5, 1.,  0.5, 0.,  1.,  1.,
+    >>> print(v0.faceGrad.allclose([[ 0.5, 1.,  0.5, 0.5, 1.,  0.5, 0.5, 1.,  0.5, 0.5, 1.,  0.5, 0.,  1.,  1.,
     ...                               0.,  0.,  1.,  1.,  0.,  0.,  1.,  1.,  0. ],
     ...                             [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
-    ...                               0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0. ]])
+    ...                               0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0. ]]))
     True
-    >>> print (v0.faceGrad.globalValue == v.faceGrad.globalValue[:,0]).all()
+    >>> print((v0.faceGrad.globalValue == v.faceGrad.globalValue[:,0]).all())
     True
-    >>> print (v1.faceGrad.globalValue  == v.faceGrad.globalValue[:,1]).all()
+    >>> print((v1.faceGrad.globalValue  == v.faceGrad.globalValue[:,1]).all())
     True
-    >>> print (v2.faceGrad.globalValue  == v.faceGrad.globalValue[:,2]).all()
+    >>> print((v2.faceGrad.globalValue  == v.faceGrad.globalValue[:,2]).all())
     True
 
     """
@@ -119,7 +121,7 @@ class _FaceGradVariable(FaceVariable):
 
         N2[s] = self.var.faceValue[s]
 
-        N = (N2 - numerix.take(self.var,id1, axis=-1)) / dAP
+        N = old_div((N2 - numerix.take(self.var,id1, axis=-1)), dAP)
 
         normals = self.mesh._orientedFaceNormals
 
@@ -147,3 +149,4 @@ def _test():
 
 if __name__ == "__main__":
     _test()
+

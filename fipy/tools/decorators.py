@@ -37,6 +37,7 @@
  # ###################################################################
  ##
 
+from builtins import object
 import re
 import sys
 import warnings

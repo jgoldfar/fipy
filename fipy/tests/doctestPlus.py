@@ -1,4 +1,5 @@
-from __future__ import print_function
+
+from builtins import object
 import sys
 import time
 import doctest
@@ -86,7 +87,7 @@ def report_skips():
         print("\n".join(skips), file=sys.stderr)
         print("!" * 79, file=sys.stderr)
 
-class _DoctestSkipper:
+class _DoctestSkipper(object):
     def __init__(self, flag, test, why, skipWarning):
         self.flag = flag
         self.why = why

@@ -63,7 +63,7 @@ The result is tested against the expected profile:
 >>> epsi = x / numerix.sqrt(t * diffusionCoeff)
 >>> from scipy.special import erf # doctest: +SCIPY
 >>> analyticalArray = erf(epsi/2) # doctest: +SCIPY
->>> print var.allclose(analyticalArray, atol = 2e-3) # doctest: +SCIPY
+>>> print(var.allclose(analyticalArray, atol = 2e-3)) # doctest: +SCIPY
 1
 
 If the problem is run interactively, we can view the result:
@@ -78,4 +78,5 @@ __docformat__ = 'restructuredtext'
 if __name__ == '__main__':
     import fipy.tests.doctestPlus
     exec(fipy.tests.doctestPlus._getScript())
-    raw_input('finished')
+    input('finished')
+

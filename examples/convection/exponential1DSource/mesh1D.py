@@ -75,7 +75,7 @@ or
 >>> CC = 1. - numerix.exp(-convCoeff[axis] * x / diffCoeff)
 >>> DD = 1. - numerix.exp(-convCoeff[axis] * L / diffCoeff)
 >>> analyticalArray = AA + BB * CC / DD
->>> print var.allclose(analyticalArray, rtol=1e-4, atol=1e-4)
+>>> print(var.allclose(analyticalArray, rtol=1e-4, atol=1e-4))
 1
 
 If the problem is run interactively, we can view the result:
@@ -93,4 +93,5 @@ if __name__ == '__main__':
     import fipy.tests.doctestPlus
     exec(fipy.tests.doctestPlus._getScript())
 
-    raw_input('finished')
+    input('finished')
+

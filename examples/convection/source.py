@@ -32,7 +32,7 @@ includes a test against the analytical result.
 >>> if __name__ == "__main__":
 ...     viewer = Viewer(vars=(phi, solution))
 ...     viewer.plot()
-...     raw_input("press key to continue")
+...     input("press key to continue")
 
 >>> phi.constrain(phi0, mesh.facesLeft)
 >>> ## fake outflow condition
@@ -40,13 +40,13 @@ includes a test against the analytical result.
 
 >>> eq = PowerLawConvectionTerm((1,)) + ImplicitSourceTerm(alpha)
 >>> eq.solve(phi)
->>> print numerix.allclose(phi, phi0 * numerix.exp(-alpha * mesh.cellCenters[0]), atol=1e-3)
+>>> print(numerix.allclose(phi, phi0 * numerix.exp(-alpha * mesh.cellCenters[0]), atol=1e-3))
 True
 
 >>> if __name__ == "__main__":
 ...     viewer = Viewer(vars=(phi, solution))
 ...     viewer.plot()
-...     raw_input("finished")
+...     input("finished")
 
 
 """
@@ -55,3 +55,4 @@ __docformat__ = 'restructuredtext'
 if __name__ == '__main__':
     import fipy.tests.doctestPlus
     exec(fipy.tests.doctestPlus._getScript())
+

@@ -1,6 +1,8 @@
+from future import standard_library
+standard_library.install_aliases()
 __docformat__ = 'restructuredtext'
 
-import cPickle
+import pickle
 import os
 import sys
 import gzip
@@ -29,7 +31,7 @@ def write(data, filename = None, extension = '', communicator=parallelComm):
         >>> old = Grid1D(nx = 2)
         >>> f, tempfile = write(old)
         >>> new = read(tempfile, f)
-        >>> print old.numberOfCells == new.numberOfCells
+        >>> print(old.numberOfCells == new.numberOfCells)
         True
 
     """
@@ -44,7 +46,7 @@ def write(data, filename = None, extension = '', communicator=parallelComm):
         fileStream = open(os.devnull, mode='w')
         (f, _filename) = (None, os.devnull)
 
-    cPickle.dump(data, fileStream, 0)
+    pickle.dump(data, fileStream, 0)
     fileStream.close()
 
     if filename is None:
@@ -76,13 +78,13 @@ def read(filename, fileobject=None, communicator=parallelComm, mesh_unmangle=Fal
         data = communicator.bcast(data, root=0)
 
     if sys.version_info < (3,0):
-        import StringIO
-        f = StringIO.StringIO(data)
+        import io
+        f = io.StringIO(data)
     else:
         import io
         f = io.BytesIO(data)
 
-    unpickler = cPickle.Unpickler(f)
+    unpickler = pickle.Unpickler(f)
 
     if mesh_unmangle:
         def find_class(module, name):
@@ -120,3 +122,4 @@ def _test():
 
 if __name__ == "__main__":
     _test()
+

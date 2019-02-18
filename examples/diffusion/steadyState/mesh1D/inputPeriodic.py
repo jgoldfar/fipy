@@ -25,7 +25,7 @@ The variable is initially a line varying form `valueLeft` to `valueRight`.
 >>> if __name__ == '__main__':
 ...     viewer = Viewer(vars=var, datamin=0., datamax=1.)
 ...     viewer.plot()
-...     raw_input("press key to continue")
+...     input("press key to continue")
 
 
 A `TransientTerm` is used to provide some fixed point, otherwise the
@@ -39,7 +39,7 @@ solver has no fixed value and can become unstable.
 
 The result of the calculation will be the average value over the domain.
 
->>> print var.allclose((valueLeft + valueRight) / 2., rtol = 1e-5)
+>>> print(var.allclose((valueLeft + valueRight) / 2., rtol = 1e-5))
 1
 
 """
@@ -49,4 +49,5 @@ __docformat__ = 'restructuredtext'
 if __name__ == '__main__':
     import fipy.tests.doctestPlus
     exec(fipy.tests.doctestPlus._getScript())
-    raw_input("finished")
+    input("finished")
+

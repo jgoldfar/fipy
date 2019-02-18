@@ -2,7 +2,7 @@
 from a repository that username has access to. Supports Github API v3.
 Adapted from: https://gist.github.com/patrickfuller/e2ea8a94badc5b6967ef3ca0a9452a43
 """
-from __future__ import print_function
+
 
 import os
 import textwrap
@@ -122,10 +122,10 @@ class changelog(Command):
         s = [textwrap.fill(x.title,
                            initial_indent=prefix,
                            subsequent_indent=hang)]
-        s += [u"{}(`#{} <{}>`_)".format(hang,
+        s += ["{}(`#{} <{}>`_)".format(hang,
                                         x.number,
                                         x.html_url)]
-        s += ([u"{}Thanks to `@{} <{}>`_.".format(hang,
+        s += (["{}Thanks to `@{} <{}>`_.".format(hang,
                                                   x.user.login,
                                                   x.user.html_url)]
                if x.user.login not in self.collaborators
@@ -135,7 +135,7 @@ class changelog(Command):
     def format_issue(self, x):
         prefix = "- "
         hang = " " * len(prefix)
-        s = [prefix + u"`#{} <{}>`_:".format(x.number,
+        s = [prefix + "`#{} <{}>`_:".format(x.number,
                                              x.html_url)]
         s += [textwrap.fill(x.title,
                             initial_indent=hang,

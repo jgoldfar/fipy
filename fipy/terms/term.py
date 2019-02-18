@@ -1,3 +1,7 @@
+
+from builtins import input
+from builtins import object
+from past.utils import old_div
 __docformat__ = 'restructuredtext'
 
 import os
@@ -142,7 +146,7 @@ class Term(object):
                 RHSvector = solver.RHSvector
             self._viewer.plot(matrix=solver.matrix, RHSvector=RHSvector)
             from fipy import raw_input
-            raw_input()
+            eval(input())
 
         return solver
 
@@ -380,7 +384,7 @@ class Term(object):
     __rmul__ = __mul__
 
     def __truediv__(self, other):
-        return (1 / other) * self
+        return (old_div(1, other)) * self
 
     __div__ = __truediv__
 
@@ -457,19 +461,19 @@ class Term(object):
         ...     sweep += 1
         >>> x = m.cellCenters[0]
         >>> answer = (numerix.exp(x) - numerix.exp(-x)) / (numerix.exp(L) - numerix.exp(-L))
-        >>> print numerix.allclose(v, answer, rtol=2e-5)
+        >>> print(numerix.allclose(v, answer, rtol=2e-5))
         True
 
         >>> v.setValue(0.)
         >>> eqn = DiffusionTerm(0.2) * 5. - 5. * ImplicitSourceTerm(0.2)
         >>> eqn.solve(v)
-        >>> print numerix.allclose(v, answer, rtol=2e-5)
+        >>> print(numerix.allclose(v, answer, rtol=2e-5))
         True
 
         >>> v.setValue(0.)
         >>> eqn = 2. * (DiffusionTerm(1.) - ImplicitSourceTerm(.5)) - DiffusionTerm(1.)
         >>> eqn.solve(v)
-        >>> print numerix.allclose(v, answer, rtol=2e-5)
+        >>> print(numerix.allclose(v, answer, rtol=2e-5))
         True
 
         >>> from fipy import Grid1D, CellVariable, DiffusionTerm, TransientTerm
@@ -485,32 +489,32 @@ class Term(object):
         SolutionVariableRequiredError: The solution variable needs to be specified.
         >>> solver = eq._prepareLinearSystem(var=A, solver=None, boundaryConditions=(), dt=1.)
         >>> numpyMatrix = solver.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[-1, 1, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[-1, 1, 0],
         ...                                      [ 1,-2, 1],
-        ...                                      [ 0, 1,-1]])
+        ...                                      [ 0, 1,-1]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print numerix.allequal(solver.RHSvector, [0, 0, 0]) # doctest: +PROCESSOR_0
+        >>> print(numerix.allequal(solver.RHSvector, [0, 0, 0])) # doctest: +PROCESSOR_0
         True
 
         >>> eq = DiffusionTerm(coeff=1., var=A)
         >>> solver = eq._prepareLinearSystem(var=None, solver=None, boundaryConditions=(), dt=1.)
         >>> numpyMatrix = solver.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[-1, 1, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[-1, 1, 0],
         ...                                      [ 1,-2, 1],
-        ...                                      [ 0, 1,-1]])
+        ...                                      [ 0, 1,-1]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print numerix.allequal(solver.RHSvector, [0, 0, 0]) # doctest: +PROCESSOR_0
+        >>> print(numerix.allequal(solver.RHSvector, [0, 0, 0])) # doctest: +PROCESSOR_0
         True
         >>> solver = eq._prepareLinearSystem(var=B, solver=None, boundaryConditions=(), dt=1.)
         >>> numpyMatrix = solver.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[ 0, 0, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[ 0, 0, 0],
         ...                                      [ 0, 0, 0],
-        ...                                      [ 0, 0, 0]])
+        ...                                      [ 0, 0, 0]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print numerix.allequal(solver.RHSvector, [0, 0, 0]) # doctest: +PROCESSOR_0
+        >>> print(numerix.allequal(solver.RHSvector, [0, 0, 0])) # doctest: +PROCESSOR_0
         True
 
         >>> eq = TransientTerm(coeff=1.) == DiffusionTerm(coeff=1.)
@@ -520,79 +524,79 @@ class Term(object):
         SolutionVariableRequiredError: The solution variable needs to be specified.
         >>> solver = eq._prepareLinearSystem(var=A, solver=None, boundaryConditions=(), dt=1.)
         >>> numpyMatrix = solver.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[ 2,-1, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[ 2,-1, 0],
         ...                                      [-1, 3,-1],
-        ...                                      [ 0,-1, 2]])
+        ...                                      [ 0,-1, 2]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print numerix.allequal(solver.RHSvector, [1, 2, 3]) # doctest: +PROCESSOR_0
+        >>> print(numerix.allequal(solver.RHSvector, [1, 2, 3])) # doctest: +PROCESSOR_0
         True
 
         >>> eq = TransientTerm(coeff=1., var=A) == DiffusionTerm(coeff=1., var=A)
         >>> solver = eq._prepareLinearSystem(var=None, solver=None, boundaryConditions=(), dt=1.)
         >>> numpyMatrix = solver.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[ 2,-1, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[ 2,-1, 0],
         ...                                      [-1, 3,-1],
-        ...                                      [ 0,-1, 2]])
+        ...                                      [ 0,-1, 2]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print numerix.allequal(solver.RHSvector, [1, 2, 3]) # doctest: +PROCESSOR_0
+        >>> print(numerix.allequal(solver.RHSvector, [1, 2, 3])) # doctest: +PROCESSOR_0
         True
         >>> solver = eq._prepareLinearSystem(var=A, solver=None, boundaryConditions=(), dt=1.)
         >>> numpyMatrix = solver.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[ 2,-1, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[ 2,-1, 0],
         ...                                      [-1, 3,-1],
-        ...                                      [ 0,-1, 2]])
+        ...                                      [ 0,-1, 2]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print numerix.allequal(solver.RHSvector, [1, 2, 3]) # doctest: +PROCESSOR_0
+        >>> print(numerix.allequal(solver.RHSvector, [1, 2, 3])) # doctest: +PROCESSOR_0
         True
         >>> solver = eq._prepareLinearSystem(var=B, solver=None, boundaryConditions=(), dt=1.)
         >>> numpyMatrix = solver.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[ 0, 0, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[ 0, 0, 0],
         ...                                      [ 0, 0, 0],
-        ...                                      [ 0, 0, 0]])
+        ...                                      [ 0, 0, 0]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print numerix.allequal(solver.RHSvector, [1, 0, -1]) # doctest: +PROCESSOR_0
+        >>> print(numerix.allequal(solver.RHSvector, [1, 0, -1])) # doctest: +PROCESSOR_0
         True
 
         >>> eq = TransientTerm(coeff=1., var=A) == DiffusionTerm(coeff=1., var=B)
-        >>> print eq
+        >>> print(eq)
         (TransientTerm(coeff=1.0, var=A) + DiffusionTerm(coeff=[-1.0], var=B))
         >>> A in set(eq._vars) and B in set(eq._vars) ## _getVars() is unordered for _BinaryTerm's.
         True
-        >>> print (eq.term, eq.other)
+        >>> print((eq.term, eq.other))
         (TransientTerm(coeff=1.0, var=A), DiffusionTerm(coeff=[-1.0], var=B))
         >>> res = eq.justResidualVector(boundaryConditions=(), dt=1.)
-        >>> print numerix.allequal(res, [-1, 0, 1])  # doctest: +PROCESSOR_0
+        >>> print(numerix.allequal(res, [-1, 0, 1]))  # doctest: +PROCESSOR_0
         True
         >>> solver = eq._prepareLinearSystem(var=A, solver=None, boundaryConditions=(), dt=1.)
         >>> numpyMatrix = solver.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[1, 0, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[1, 0, 0],
         ...                                      [0, 1, 0],
-        ...                                      [0, 0, 1]])
+        ...                                      [0, 0, 1]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print numerix.allequal(solver.RHSvector, [2, 2, 2]) # doctest: +PROCESSOR_0
+        >>> print(numerix.allequal(solver.RHSvector, [2, 2, 2])) # doctest: +PROCESSOR_0
         True
         >>> solver = eq._prepareLinearSystem(var=B, solver=None, boundaryConditions=(), dt=1.)
         >>> numpyMatrix = solver.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[ 1,-1, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[ 1,-1, 0],
         ...                                      [-1, 2,-1],
-        ...                                      [ 0,-1, 1]])
+        ...                                      [ 0,-1, 1]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print numerix.allequal(solver.RHSvector, [0, 0, 0]) # doctest: +PROCESSOR_0
+        >>> print(numerix.allequal(solver.RHSvector, [0, 0, 0])) # doctest: +PROCESSOR_0
         True
         >>> solver = eq._prepareLinearSystem(var=C, solver=None, boundaryConditions=(), dt=1.)
         >>> numpyMatrix = solver.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[ 0, 0, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[ 0, 0, 0],
         ...                                      [ 0, 0, 0],
-        ...                                      [ 0, 0, 0]])
+        ...                                      [ 0, 0, 0]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print numerix.allequal(solver.RHSvector, [1, 0, -1]) # doctest: +PROCESSOR_0
+        >>> print(numerix.allequal(solver.RHSvector, [1, 0, -1])) # doctest: +PROCESSOR_0
         True
 
         >>> eq = TransientTerm(coeff=1.) == DiffusionTerm(coeff=1., var=B) + 10.  # doctest: +IGNORE_EXCEPTION_DETAIL
@@ -600,20 +604,20 @@ class Term(object):
             ...
         ExplicitVariableError: Terms with explicit Variables cannot mix with Terms with implicit Variables.
         >>> eq = DiffusionTerm(coeff=1., var=B) + 10. == 0
-        >>> print eq
+        >>> print(eq)
         (DiffusionTerm(coeff=[1.0], var=B) + 10.0)
-        >>> print eq._vars
+        >>> print(eq._vars)
         [B]
-        >>> print (eq.term, eq.other)
+        >>> print((eq.term, eq.other))
         (DiffusionTerm(coeff=[1.0], var=B), 10.0)
         >>> solver = eq._prepareLinearSystem(var=B, solver=None, boundaryConditions=(), dt=1.)
         >>> numpyMatrix = solver.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[-1, 1, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[-1, 1, 0],
         ...                                      [1, -2, 1],
-        ...                                      [0, 1, -1]])
+        ...                                      [0, 1, -1]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print numerix.allequal(solver.RHSvector, [-10, -10, -10])  # doctest: +PROCESSOR_0
+        >>> print(numerix.allequal(solver.RHSvector, [-10, -10, -10]))  # doctest: +PROCESSOR_0
         True
 
         >>> from fipy.solvers import DummySolver
@@ -653,25 +657,25 @@ class Term(object):
         >>> eq.cacheRHSvector()
         >>> eq.solve(solver=DummySolver())
         >>> numpyMatrix = eq.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[-1, 1, 0, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[-1, 1, 0, 0],
         ...                                      [1, -1, 0, 0],
         ...                                      [0, 0, -2, 2],
-        ...                                      [0, 0, 2, -2]])
+        ...                                      [0, 0, 2, -2]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print eq.RHSvector.globalValue
+        >>> print(eq.RHSvector.globalValue)
         [ 0.  0.  0.  0.]
-        >>> print eq._vars
+        >>> print(eq._vars)
         [A, B]
         >>> solver = eq._prepareLinearSystem(var=None, solver=None, boundaryConditions=(), dt=1.)
         >>> numpyMatrix = eq.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[-1, 1, 0, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[-1, 1, 0, 0],
         ...                                      [1, -1, 0, 0],
         ...                                      [0, 0, -2, 2],
-        ...                                      [0, 0, 2, -2]])
+        ...                                      [0, 0, 2, -2]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print eq.RHSvector.globalValue
+        >>> print(eq.RHSvector.globalValue)
         [ 0.  0.  0.  0.]
         >>> solver = eq._prepareLinearSystem(var=A, solver=None, boundaryConditions=(), dt=1.) # doctest: +IGNORE_EXCEPTION_DETAIL
         Traceback (most recent call last):
@@ -712,20 +716,20 @@ class Term(object):
         >>> eq.cacheRHSvector()
         >>> eq.solve(solver=DummySolver())
         >>> numpyMatrix = eq.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[-1, 1, -2, 2, 0, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[-1, 1, -2, 2, 0, 0],
         ...                                      [1, -1, 2, -2, 0, 0],
         ...                                      [0, 0, -2, 2, -3, 3],
         ...                                      [0, 0, 2, -2, 3, -3],
         ...                                      [-1, 1, 0, 0, -3, 3],
-        ...                                      [1, -1, 0, 0, 3, -3]])
+        ...                                      [1, -1, 0, 0, 3, -3]]))
         ... # doctest: +PROCESSOR_0
         True
-        >>> print eq.RHSvector.globalValue
+        >>> print(eq.RHSvector.globalValue)
         [ 0.  0.  0.  0.  0.  0.]
-        >>> print eq._vars
+        >>> print(eq._vars)
         [A, B, C]
         >>> eq = DiffusionTerm(var=A)
-        >>> print (0 & eq) is eq
+        >>> print((0 & eq) is eq)
         True
         >>> eq = 0
         >>> eq &= DiffusionTerm(coeff=1., var=A)
@@ -734,10 +738,10 @@ class Term(object):
         >>> eq.cacheRHSvector()
         >>> eq.solve(solver=DummySolver())
         >>> numpyMatrix = eq.matrix.numpyArray
-        >>> print numerix.allequal(numpyMatrix, [[-1, 1, 0, 0],
+        >>> print(numerix.allequal(numpyMatrix, [[-1, 1, 0, 0],
         ...                                      [1, -1, 0, 0],
         ...                                      [0, 0, -2, 2],
-        ...                                      [0, 0, 2, -2]])
+        ...                                      [0, 0, 2, -2]]))
         ... # doctest: +PROCESSOR_0
         True
 
@@ -764,3 +768,4 @@ def _test():
 
 if __name__ == "__main__":
     _test()
+

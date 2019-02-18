@@ -1,3 +1,5 @@
+
+from past.utils import old_div
 __docformat__ = 'restructuredtext'
 
 from fipy.terms.asymmetricConvectionTerm import _AsymmetricConvectionTerm
@@ -19,7 +21,7 @@ class _PowerLawConvectionTermAlpha(FaceVariable):
         >>> P = FaceVariable(mesh=mesh, value=(1e-3, 1e+71, 1e-3, 1e-3))
         >>>
         >>> alpha = PowerLawConvectionTerm([1])._alpha(P)
-        >>> print numerix.allclose(alpha, [ 0.5,  1.,   0.5 , 0.5])
+        >>> print(numerix.allclose(alpha, [ 0.5,  1.,   0.5 , 0.5]))
         True
     """
     def __init__(self, P):
@@ -65,17 +67,17 @@ class _PowerLawConvectionTermAlpha(FaceVariable):
             P = self.P.numericValue
             P = numerix.where(abs(P) < eps, eps, P)
 
-            alpha = numerix.where(                  P > 10.,                     (P - 1.) / P,   0.5)
+            alpha = numerix.where(                  P > 10.,                     old_div((P - 1.), P),   0.5)
 
             tmp = (1. - P / 10.)
             tmpSqr = tmp * tmp
-            alpha = numerix.where(  (10. >= P) & (P > eps), ((P-1.) + tmpSqr*tmpSqr*tmp) / P, alpha)
+            alpha = numerix.where(  (10. >= P) & (P > eps), old_div(((P-1.) + tmpSqr*tmpSqr*tmp), P), alpha)
 
             tmp = (1. + P / 10.)
             tmpSqr = tmp * tmp
-            alpha = numerix.where((-eps >  P) & (P >= -10.),     (tmpSqr*tmpSqr*tmp - 1.) / P, alpha)
+            alpha = numerix.where((-eps >  P) & (P >= -10.),     old_div((tmpSqr*tmpSqr*tmp - 1.), P), alpha)
 
-            alpha = numerix.where(                 P < -10.,                          -1. / P, alpha)
+            alpha = numerix.where(                 P < -10.,                          old_div(-1., P), alpha)
 
             return PhysicalField(value = alpha)
 
@@ -101,3 +103,4 @@ def _test():
 
 if __name__ == "__main__":
     _test()
+

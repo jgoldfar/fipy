@@ -1,4 +1,10 @@
-from __future__ import print_function
+
+
+from builtins import zip
+from builtins import str
+from builtins import range
+from builtins import object
+from past.utils import old_div
 __docformat__ = 'restructuredtext'
 
 import os
@@ -231,7 +237,7 @@ def openPOSFile(name, communicator=parallelComm, mode='w'):
                    communicator=communicator,
                    mode=mode)
 
-class GmshFile:
+class GmshFile(object):
     def __init__(self, filename, communicator, mode, fileIsTemporary=False):
         self.filename = filename
         self.communicator = communicator
@@ -267,14 +273,14 @@ class GmshFile:
 
     def _orderVertices(self, vertexCoords, vertices):
         coordinates = nx.take(vertexCoords, vertices, axis=1)
-        centroid = nx.add.reduce(coordinates, axis=1) / coordinates.shape[1]
+        centroid = old_div(nx.add.reduce(coordinates, axis=1), coordinates.shape[1])
         coordinates = coordinates - centroid[..., nx.newaxis]
 
         # to prevent div by zero
         coordinates = nx.where(coordinates == 0, 1.e-10, coordinates)
 
         # angles go from -pi / 2 to 3*pi / 2
-        angles = nx.arctan(coordinates[1] / coordinates[0]) \
+        angles = nx.arctan(old_div(coordinates[1], coordinates[0])) \
                 + nx.where(coordinates[0] < 0, nx.pi, 0)
         sortorder = nx.argsort(angles)
         return nx.take(vertices, sortorder)
@@ -796,7 +802,7 @@ class MSHFile(GmshFile):
 
             self.physicalFaceMap = nx.zeros(facesToV.shape[-1:], 'l')
             self.geometricalFaceMap = nx.zeros(facesToV.shape[-1:], 'l')
-            for face in facesDict.keys():
+            for face in list(facesDict.keys()):
                 # not all faces are necessarily tagged
                 if face in faceEntitiesDict:
                     self.physicalFaceMap[facesDict[face]] = faceEntitiesDict[face][0]
@@ -1036,7 +1042,7 @@ class MSHFile(GmshFile):
             currLineInts = [int(x) for x in el.split()]
             elemType     = currLineInts[1]
 
-            if elemType in self.numFacesPerCell.keys():
+            if elemType in list(self.numFacesPerCell.keys()):
                 # element is a cell
 
                 (cellOffset,
@@ -1070,7 +1076,7 @@ class MSHFile(GmshFile):
                     cellsData.add(currLine=currLineInts, elType=elemType,
                                   physicalEntity=physicalEntity,
                                   geometricalEntity=geometricalEntity)
-            elif elemType in self.numVertsPerFace.keys():
+            elif elemType in list(self.numVertsPerFace.keys()):
                 # element is a face
 
                 (faceOffset,
@@ -1130,11 +1136,11 @@ class MSHFile(GmshFile):
         self.geometricalFaceMap = FaceVariable(mesh=mesh, value=self.geometricalFaceMap)
 
         physicalCells = dict()
-        for name in self.physicalNames[self.dimensions].keys():
+        for name in list(self.physicalNames[self.dimensions].keys()):
             physicalCells[name] = (self.physicalCellMap == self.physicalNames[self.dimensions][name])
 
         physicalFaces = dict()
-        for name in self.physicalNames[self.dimensions-1].keys():
+        for name in list(self.physicalNames[self.dimensions-1].keys()):
             physicalFaces[name] = (self.physicalFaceMap == self.physicalNames[self.dimensions-1][name])
 
         return (self.physicalCellMap,
@@ -1334,88 +1340,88 @@ class Gmsh2D(Mesh2D):
     >>> side = 4.
     >>> squaredCircle = Gmsh2D('''
     ... // A mesh consisting of a square inside a circle inside a circle
-    ...
+    ... 
     ... // define the basic dimensions of the mesh
-    ...
+    ... 
     ... cellSize = 1;
     ... radius = %(radius)g;
     ... side = %(side)g;
-    ...
+    ... 
     ... // define the compass points of the inner circle
-    ...
+    ... 
     ... Point(1) = {0, 0, 0, cellSize};
     ... Point(2) = {-radius, 0, 0, cellSize};
     ... Point(3) = {0, radius, 0, cellSize};
     ... Point(4) = {radius, 0, 0, cellSize};
     ... Point(5) = {0, -radius, 0, cellSize};
-    ...
+    ... 
     ... // define the compass points of the outer circle
-    ...
+    ... 
     ... Point(6) = {-2*radius, 0, 0, cellSize};
     ... Point(7) = {0, 2*radius, 0, cellSize};
     ... Point(8) = {2*radius, 0, 0, cellSize};
     ... Point(9) = {0, -2*radius, 0, cellSize};
-    ...
+    ... 
     ... // define the corners of the square
-    ...
+    ... 
     ... Point(10) = {side/2, side/2, 0, cellSize/2};
     ... Point(11) = {-side/2, side/2, 0, cellSize/2};
     ... Point(12) = {-side/2, -side/2, 0, cellSize/2};
     ... Point(13) = {side/2, -side/2, 0, cellSize/2};
-    ...
+    ... 
     ... // define the inner circle
-    ...
+    ... 
     ... Circle(1) = {2, 1, 3};
     ... Circle(2) = {3, 1, 4};
     ... Circle(3) = {4, 1, 5};
     ... Circle(4) = {5, 1, 2};
-    ...
+    ... 
     ... // define the outer circle
-    ...
+    ... 
     ... Circle(5) = {6, 1, 7};
     ... Circle(6) = {7, 1, 8};
     ... Circle(7) = {8, 1, 9};
     ... Circle(8) = {9, 1, 6};
-    ...
+    ... 
     ... // define the square
-    ...
+    ... 
     ... Line(9) = {10, 13};
     ... Line(10) = {13, 12};
     ... Line(11) = {12, 11};
     ... Line(12) = {11, 10};
-    ...
+    ... 
     ... // define the three boundaries
-    ...
+    ... 
     ... Line Loop(1) = {1, 2, 3, 4};
     ... Line Loop(2) = {5, 6, 7, 8};
     ... Line Loop(3) = {9, 10, 11, 12};
-    ...
+    ... 
     ... // define the three domains
-    ...
+    ... 
     ... Plane Surface(1) = {2, 1};
     ... Plane Surface(2) = {1, 3};
     ... Plane Surface(3) = {3};
-    ...
+    ... 
     ... // label the three domains
-    ...
+    ... 
     ... // attention: if you use any "Physical" labels, you *must* label
     ... // all elements that correspond to FiPy Cells (Physical Surface in 2D
     ... // and Physical Volume in 3D) or Gmsh will not include them and FiPy
     ... // will not be able to include them in the Mesh.
-    ...
+    ... 
     ... // note: if you do not use any labels, all Cells will be included.
-    ...
+    ... 
     ... Physical Surface("Outer") = {1};
     ... Physical Surface("Middle") = {2};
     ... Physical Surface("Inner") = {3};
-    ...
+    ... 
     ... // label the "north-west" part of the exterior boundary
-    ...
+    ... 
     ... // note: you only need to label the Face elements
     ... // (Physical Line in 2D and Physical Surface in 3D) that correspond
     ... // to boundaries you are interested in. FiPy does not need them to
     ... // construct the Mesh.
-    ...
+    ... 
     ... Physical Line("NW") = {5};
     ... ''' % locals()) # doctest: +GMSH
 
@@ -1431,7 +1437,7 @@ class Gmsh2D(Mesh2D):
     ...           & ~((x > -side/2) & (x < side/2)
     ...               & (y > -side/2) & (y < side/2))) # doctest: +GMSH
 
-    >>> print (middle == squaredCircle.physicalCells["Middle"]).all() # doctest: +GMSH
+    >>> print((middle == squaredCircle.physicalCells["Middle"]).all()) # doctest: +GMSH
     True
 
     >>> X, Y = squaredCircle.faceCenters # doctest: +GMSH
@@ -1440,7 +1446,7 @@ class Gmsh2D(Mesh2D):
     ...       & (X**2 + Y**2 < (2.01*radius)**2)
     ...       & (X <= 0) & (Y >= 0)) # doctest: +GMSH
 
-    >>> print (NW == squaredCircle.physicalFaces["NW"]).all() # doctest: +GMSH
+    >>> print((NW == squaredCircle.physicalFaces["NW"]).all()) # doctest: +GMSH
     True
 
     It is possible to direct Gmsh to give the mesh different densities in
@@ -1448,27 +1454,27 @@ class Gmsh2D(Mesh2D):
 
     >>> geo = '''
     ... // A mesh consisting of a square
-    ...
+    ... 
     ... // define the corners of the square
-    ...
+    ... 
     ... Point(1) = {1, 1, 0, 1};
     ... Point(2) = {0, 1, 0, 1};
     ... Point(3) = {0, 0, 0, 1};
     ... Point(4) = {1, 0, 0, 1};
-    ...
+    ... 
     ... // define the square
-    ...
+    ... 
     ... Line(1) = {1, 2};
     ... Line(2) = {2, 3};
     ... Line(3) = {3, 4};
     ... Line(4) = {4, 1};
-    ...
+    ... 
     ... // define the boundary
-    ...
+    ... 
     ... Line Loop(1) = {1, 2, 3, 4};
-    ...
+    ... 
     ... // define the domain
-    ...
+    ... 
     ... Plane Surface(1) = {1};
     ... '''
 
@@ -1484,12 +1490,12 @@ class Gmsh2D(Mesh2D):
 
     Check that the mesh is monotonically approaching the desired density
 
-    >>> print numerix.greater(std[:-1], std[1:]).all() # doctest: +GMSH
+    >>> print(numerix.greater(std[:-1], std[1:]).all()) # doctest: +GMSH
     True
 
     and that the final density is close enough to the desired density
 
-    >>> print std[-1] < 0.2 # doctest: +GMSH
+    >>> print(std[-1] < 0.2) # doctest: +GMSH
     True
 
     The initial mesh doesn't have to be from Gmsh
@@ -1506,7 +1512,7 @@ class Gmsh2D(Mesh2D):
     >>> bkg = CellVariable(mesh=square, value=abs(x / 4) + 0.01) # doctest: +GMSH
     >>> std2 = numerix.std(numerix.sqrt(2 * square.cellVolumes) / bkg) # doctest: +GMSH
 
-    >>> print std1 > std2 # doctest: +GMSH
+    >>> print(std1 > std2) # doctest: +GMSH
     True
 
     :Parameters:
@@ -1592,7 +1598,7 @@ class Gmsh2D(Mesh2D):
         ... Plane Surface(11) = {10};
         ... ''') # doctest: +GMSH
 
-        >>> print circ.cellVolumes[0] > 0 # doctest: +GMSH
+        >>> print(circ.cellVolumes[0] > 0) # doctest: +GMSH
         True
 
         Now we'll test Gmsh2D again, but on a rectangle.
@@ -1612,7 +1618,7 @@ class Gmsh2D(Mesh2D):
         ... Plane Surface(11) = {10};
         ... ''') # doctest: +GMSH
 
-        >>> print rect.cellVolumes[0] > 0 # doctest: +GMSH
+        >>> print(rect.cellVolumes[0] > 0) # doctest: +GMSH
         True
 
         Testing multiple shape types within a mesh;
@@ -1634,18 +1640,18 @@ class Gmsh2D(Mesh2D):
         ... Recombine Surface{11};
         ... ''') # doctest: +GMSH
 
-        >>> print circle.cellVolumes[0] > 0 # doctest: +GMSH
+        >>> print(circle.cellVolumes[0] > 0) # doctest: +GMSH
         True
 
         >>> from fipy.tools import dump
         >>> f, tmpfile = dump.write(circle) # doctest: +GMSH
         >>> pickle_circle = dump.read(tmpfile, f) # doctest: +GMSH
 
-        >>> print (pickle_circle.cellVolumes == circle.cellVolumes).all()
+        >>> print((pickle_circle.cellVolumes == circle.cellVolumes).all())
         ... # doctest: +GMSH, +SERIAL
         True
 
-        >>> print (pickle_circle._globalOverlappingCellIDs == circle._globalOverlappingCellIDs).all()
+        >>> print((pickle_circle._globalOverlappingCellIDs == circle._globalOverlappingCellIDs).all())
         ... # doctest: +GMSH, +SERIAL
         True
 
@@ -1709,7 +1715,7 @@ class Gmsh2D(Mesh2D):
 
         >>> os.remove(mshFile)
 
-        >>> print nx.allclose(sqrTri.cellVolumes, [1., 0.5]) # doctest: +GMSH
+        >>> print(nx.allclose(sqrTri.cellVolumes, [1., 0.5])) # doctest: +GMSH
         True
 
 
@@ -1729,7 +1735,7 @@ class Gmsh2D(Mesh2D):
         >>> f.close() # doctest: +GMSH
 
         >>> f = open(posFile, mode='r')
-        >>> print "".join(f.readlines()) # doctest: +GMSH
+        >>> print("".join(f.readlines())) # doctest: +GMSH
         $PostFormat
         1.4 0 8
         $EndPostFormat
@@ -1825,7 +1831,7 @@ class Gmsh2DIn3DSpace(Gmsh2D):
         >>> sphere = Gmsh2DIn3DSpace('''
         ... radius = 5.0;
         ... cellSize = 0.3;
-        ...
+        ... 
         ... // create inner 1/8 shell
         ... Point(1) = {0, 0, 0, cellSize};
         ... Point(2) = {-radius, 0, 0, cellSize};
@@ -1836,7 +1842,7 @@ class Gmsh2DIn3DSpace(Gmsh2D):
         ... Circle(3) = {4, 1, 3};
         ... Line Loop(1) = {1, -3, 2} ;
         ... Ruled Surface(1) = {1};
-        ...
+        ... 
         ... // create remaining 7/8 inner shells
         ... t1[] = Rotate {{0,0,1},{0,0,0},Pi/2}
         ... {Duplicata{Surface{1};}};
@@ -1852,24 +1858,24 @@ class Gmsh2DIn3DSpace(Gmsh2D):
         ... {Duplicata{Surface{t4[0]};}};
         ... t7[] = Rotate {{0,0,1},{0,0,0},Pi*3/2}
         ... {Duplicata{Surface{t4[0]};}};
-        ...
+        ... 
         ... // create entire inner and outer shell
         ... Surface
         ... Loop(100)={1,t1[0],t2[0],t3[0],t7[0],t4[0],t5[0],t6[0]};
         ... ''').extrude(extrudeFunc=lambda r: 1.1 * r) # doctest: +GMSH
 
-        >>> print sphere.cellVolumes[0] > 0 # doctest: +GMSH
+        >>> print(sphere.cellVolumes[0] > 0) # doctest: +GMSH
         True
 
         >>> from fipy.tools import dump
         >>> f, tmpfile = dump.write(sphere) # doctest: +GMSH
         >>> pickle_sphere = dump.read(tmpfile, f) # doctest: +GMSH
 
-        >>> print (pickle_sphere.cellVolumes == sphere.cellVolumes).all()
+        >>> print((pickle_sphere.cellVolumes == sphere.cellVolumes).all())
         ... # doctest: +GMSH, +SERIAL
         True
 
-        >>> print (pickle_sphere._globalOverlappingCellIDs == sphere._globalOverlappingCellIDs).all()
+        >>> print((pickle_sphere._globalOverlappingCellIDs == sphere._globalOverlappingCellIDs).all())
         ... # doctest: +GMSH, +SERIAL
         True
         """
@@ -1934,63 +1940,63 @@ class Gmsh3D(Mesh):
         ... Len = 2;
         ... Hei = 1;
         ... Wid = 1;
-        ...
+        ... 
         ... Point(1) = {0, 0, 0, cellSize};
         ... Point(2) = {0, 0, Wid, cellSize};
         ... Point(3) = {0, Hei, Wid, cellSize};
         ... Point(4) = {0, Hei, 0, cellSize};
-        ...
+        ... 
         ... Point(5) = {Len, 0, 0, cellSize};
         ... Point(6) = {Len, 0, Wid, cellSize};
         ... Point(7) = {Len, Hei, Wid, cellSize};
         ... Point(8) = {Len, Hei, 0, cellSize};
-        ...
+        ... 
         ... Line(9)  = {1, 2};
         ... Line(10) = {2, 3};
         ... Line(11) = {3, 4};
         ... Line(12) = {4, 1};
-        ...
+        ... 
         ... Line(13) = {5, 6};
         ... Line(14) = {6, 7};
         ... Line(15) = {7, 8};
         ... Line(16) = {8, 5};
-        ...
+        ... 
         ... Line(17) = {1, 5};
         ... Line(18) = {2, 6};
         ... Line(19) = {3, 7};
         ... Line(20) = {4, 8};
-        ...
+        ... 
         ... Line Loop(21) = {9, 10, 11, 12};
         ... Line Loop(22) = {13, 14, 15, 16};
         ... Line Loop(23) = {17, -16, -20, 12};
         ... Line Loop(24) = {13, -18, -9, 17};
         ... Line Loop(25) = {18, 14, -19, -10};
         ... Line Loop(26) = {-19, 11, 20, -15};
-        ...
+        ... 
         ... Plane Surface(27) = {21};
         ... Plane Surface(28) = {22};
         ... Plane Surface(29) = {23};
         ... Plane Surface(30) = {24};
         ... Plane Surface(31) = {25};
         ... Plane Surface(32) = {26};
-        ...
+        ... 
         ... Surface Loop(33) = {27, 28, 29, 30, 31, 32};
-        ...
+        ... 
         ... Volume(34) = {33};
         ... ''') # doctest: +GMSH
 
-        >>> print prism.cellVolumes[0] > 0 # doctest: +GMSH
+        >>> print(prism.cellVolumes[0] > 0) # doctest: +GMSH
         True
 
         >>> from fipy.tools import dump
         >>> f, tmpfile = dump.write(prism) # doctest: +GMSH
         >>> pickle_prism = dump.read(tmpfile, f) # doctest: +GMSH
 
-        >>> print (pickle_prism.cellVolumes == prism.cellVolumes).all()
+        >>> print((pickle_prism.cellVolumes == prism.cellVolumes).all())
         ... # doctest: +GMSH, +SERIAL
         True
 
-        >>> print (pickle_prism._globalOverlappingCellIDs == prism._globalOverlappingCellIDs).all()
+        >>> print((pickle_prism._globalOverlappingCellIDs == prism._globalOverlappingCellIDs).all())
         ... # doctest: +GMSH, +SERIAL
         True
 
@@ -2032,7 +2038,7 @@ class Gmsh3D(Mesh):
 
         >>> os.remove(mshFile)
 
-        >>> print nx.allclose(tetPriPyr.cellVolumes, [1./6, 1., 2./3]) # doctest: +GMSH
+        >>> print(nx.allclose(tetPriPyr.cellVolumes, [1./6, 1., 2./3])) # doctest: +GMSH
         True
 
         Write tetrahedron, prism, and pyramid volumes out as a POS file
@@ -2053,7 +2059,7 @@ class Gmsh3D(Mesh):
         >>> f = open(posFile, mode='r') # doctest: +GMSH
         >>> l = f.readlines() # doctest: +GMSH
         >>> f.close() # doctest: +GMSH
-        >>> print "".join(l[:5]) # doctest: +GMSH
+        >>> print("".join(l[:5])) # doctest: +GMSH
         $PostFormat
         1.4 0 8
         $EndPostFormat
@@ -2061,7 +2067,7 @@ class Gmsh3D(Mesh):
         volume 1
         <BLANKLINE>
 
-        >>> print l[-1] # doctest: +GMSH
+        >>> print(l[-1]) # doctest: +GMSH
         $EndView
         <BLANKLINE>
 
@@ -2101,7 +2107,7 @@ class Gmsh3D(Mesh):
         ...  0.0 0.0 0.0 0.0 -1.0
         ...  0.6666666666666666 0.6666666666666666 0.6666666666666666 0.6666666666666666 0.6666666666666666
         ...  ''', sep=" ")
-        >>> print numerix.allclose(a1, a2) # doctest: +GMSH
+        >>> print(numerix.allclose(a1, a2)) # doctest: +GMSH
         True
 
         >>> if parallelComm.procID == 0:
@@ -2285,3 +2291,4 @@ def _test():
 
 if __name__ == "__main__":
     _test()
+

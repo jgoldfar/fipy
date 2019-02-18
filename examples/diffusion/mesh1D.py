@@ -136,8 +136,8 @@ the result is tested against the expected profile:
 ...     from scipy.special import erf # doctest: +SCIPY
 ...     phiAnalytical.setValue(1 - erf(x / (2 * numerix.sqrt(D * t)))) # doctest: +SCIPY
 ... except ImportError:
-...     print "The SciPy library is not available to test the solution to \
-... the transient diffusion equation"
+...     print("The SciPy library is not available to test the solution to \
+... the transient diffusion equation")
 
 We then solve the equation by repeatedly looping in time:
 
@@ -147,11 +147,11 @@ We then solve the equation by repeatedly looping in time:
 ...     if __name__ == '__main__':
 ...         viewer.plot()
 
->>> print phi.allclose(phiAnalytical, atol = 7e-4) # doctest: +SCIPY
+>>> print(phi.allclose(phiAnalytical, atol = 7e-4)) # doctest: +SCIPY
 1
 
 >>> if __name__ == '__main__':
-...     raw_input("Explicit transient diffusion. Press <return> to proceed...")
+...     input("Explicit transient diffusion. Press <return> to proceed...")
 
 .. image:: mesh1Dexplicit.*
    :width: 90%
@@ -191,11 +191,11 @@ and rerun with much larger time steps
 ...     if __name__ == '__main__':
 ...         viewer.plot()
 
->>> print phi.allclose(phiAnalytical, atol = 2e-2) # doctest: +SCIPY
+>>> print(phi.allclose(phiAnalytical, atol = 2e-2)) # doctest: +SCIPY
 1
 
 >>> if __name__ == '__main__':
-...     raw_input("Implicit transient diffusion. Press <return> to proceed...")
+...     input("Implicit transient diffusion. Press <return> to proceed...")
 
 .. image:: mesh1Dimplicit.*
    :width: 90%
@@ -235,11 +235,11 @@ of the fully implicit scheme to drive down the error
 >>> if __name__ == '__main__':
 ...     viewer.plot()
 
->>> print phi.allclose(phiAnalytical, atol = 3e-3) # doctest: +SCIPY
+>>> print(phi.allclose(phiAnalytical, atol = 3e-3)) # doctest: +SCIPY
 1
 
 >>> if __name__ == '__main__':
-...     raw_input("Crank-Nicholson transient diffusion. Press <return> to proceed...")
+...     input("Crank-Nicholson transient diffusion. Press <return> to proceed...")
 
 -----
 
@@ -265,12 +265,12 @@ function, but simply a straight line, which we can confirm to a tolerance
 of :math:`10^{-10}`.
 
 >>> L = nx * dx
->>> print phi.allclose(valueLeft + (valueRight - valueLeft) * x / L,
-...                    rtol = 1e-10, atol = 1e-10)
+>>> print(phi.allclose(valueLeft + (valueRight - valueLeft) * x / L,
+...                    rtol = 1e-10, atol = 1e-10))
 1
 
 >>> if __name__ == '__main__':
-...     raw_input("Implicit steady-state diffusion. Press <return> to proceed...")
+...     input("Implicit steady-state diffusion. Press <return> to proceed...")
 
 .. image:: mesh1DsteadyState.*
    :width: 90%
@@ -315,7 +315,7 @@ condition will automatically update,
 ...         viewer.plot()
 
 >>> if __name__ == '__main__':
-...     raw_input("Time-dependent boundary condition. Press <return> to proceed...")
+...     input("Time-dependent boundary condition. Press <return> to proceed...")
 
 .. image:: mesh1DtimedBC.*
    :width: 90%
@@ -400,14 +400,14 @@ or
 ...                        where=(L / 4. <= x) & (x < 3. * L / 4.))
 >>> phiAnalytical.setValue(x + 18. * L / 4. ,
 ...                        where=3. * L / 4. <= x)
->>> print phi.allclose(phiAnalytical, atol = 1e-8, rtol = 1e-8)
+>>> print(phi.allclose(phiAnalytical, atol = 1e-8, rtol = 1e-8))
 1
 
 And finally, we can plot the result
 
 >>> if __name__ == '__main__':
 ...     Viewer(vars=(phi, phiAnalytical)).plot()
-...     raw_input("Non-uniform steady-state diffusion. Press <return> to proceed...")
+...     input("Non-uniform steady-state diffusion. Press <return> to proceed...")
 
 
 .. image:: mesh1Dnon-uniform.*
@@ -481,14 +481,14 @@ Comparing to the correct analytical solution, :math:`\phi = x`
 
 >>> x = mesh.cellCenters[0]
 >>> phiAnalytical.setValue(x)
->>> print phiT.allclose(phiAnalytical, atol = 1e-8, rtol = 1e-8) # doctest: +SCIPY
+>>> print(phiT.allclose(phiAnalytical, atol = 1e-8, rtol = 1e-8)) # doctest: +SCIPY
 1
 
 and finally, plot
 
 >>> if __name__ == '__main__':
 ...     Viewer(vars=(phiT, phiF)).plot()
-...     raw_input("Non-uniform thermal conductivity. Press <return> to proceed...")
+...     input("Non-uniform thermal conductivity. Press <return> to proceed...")
 
 .. image:: mesh1Dalpha.*
    :width: 90%
@@ -595,19 +595,19 @@ sweeps.
 ...     for step in range(steps):
 ...         # only move forward in time once per time step
 ...         phi[0].updateOld()
-...
+... 
 ...         # but "sweep" many times per time step
 ...         for sweep in range(sweeps):
 ...             res = eq.sweep(var=phi[0],
 ...                            dt=timeStepDuration)
 ...         if __name__ == '__main__':
 ...             viewer.plot()
-...
+... 
 ...     # copy the final result into the appropriate display variable
 ...     phi[sweeps].setValue(phi[0])
 ...     if __name__ == '__main__':
 ...         viewer.plot()
-...         raw_input("Implicit variable diffusivity. %d sweep(s). \
+...         input("Implicit variable diffusivity. %d sweep(s). \
 ... Residual = %f. Press <return> to proceed..." % (sweeps, (abs(res))))
 
 As can be seen, sweeping does not dramatically change the result, but the
@@ -633,12 +633,12 @@ can just solve for it directly
 ...                    dt=timeStepDuration)
 
 
->>> print phi[0].allclose(phiAnalytical, atol = 1e-1)
+>>> print(phi[0].allclose(phiAnalytical, atol = 1e-1))
 1
 
 >>> if __name__ == '__main__':
 ...     viewer.plot()
-...     raw_input("Implicit variable diffusivity - steady-state. \
+...     input("Implicit variable diffusivity - steady-state. \
 ... Press <return> to proceed...")
 
 .. image:: mesh1Dvariable.*
@@ -681,7 +681,7 @@ conditions, and solve
 ...     if __name__ == '__main__':
 ...         viewer.plot()
 >>> if __name__ == '__main__':
-...     raw_input("No-flux - transient. \
+...     input("No-flux - transient. \
 ... Press <return> to proceed...")
 
 .. image:: mesh1D-noflux_transient.*
@@ -692,7 +692,7 @@ conditions, and solve
 and see that :math:`\phi` dissipates to the expected average value of 0.2 with
 reasonable accuracy.
 
->>> print numerix.allclose(phi, 0.2, atol=1e-5)
+>>> print(numerix.allclose(phi, 0.2, atol=1e-5))
 True
 
 If we reset the initial condition
@@ -708,10 +708,10 @@ and solve the steady-state problem
 >>> if __name__ == '__main__':
 ...     viewer.plot()
 >>> if __name__ == '__main__':
-...     raw_input("No-flux - stead-state failure. \
+...     input("No-flux - stead-state failure. \
 ... Press <return> to proceed...")
 
->>> print numerix.allclose(phi, 0.0) #doctest: +PYSPARSE_SOLVER
+>>> print(numerix.allclose(phi, 0.0)) #doctest: +PYSPARSE_SOLVER
 True
 
 .. image:: mesh1D-noflux_steady_fail.*
@@ -769,10 +769,10 @@ The solution is to run the transient problem and to take one enormous time step
 >>> if __name__ == '__main__':
 ...     viewer.plot()
 >>> if __name__ == '__main__':
-...     raw_input("No-flux - steady-state. \
+...     input("No-flux - steady-state. \
 ... Press <return> to proceed...")
 
->>> print numerix.allclose(phi, 0.2, atol=1e-5)
+>>> print(numerix.allclose(phi, 0.2, atol=1e-5))
 True
 
 .. image:: mesh1D-noflux_steady.*
@@ -839,3 +839,4 @@ __docformat__ = 'restructuredtext'
 if __name__ == '__main__':
     import fipy.tests.doctestPlus
     exec(fipy.tests.doctestPlus._getScript())
+

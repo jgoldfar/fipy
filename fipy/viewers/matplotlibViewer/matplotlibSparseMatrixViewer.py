@@ -182,12 +182,12 @@ class MatplotlibSparseMatrixViewer:
         import os
 
         if "print" in os.environ['FIPY_DISPLAY_MATRIX'].lower().split():
-            print "-"*75
-            print self.title
-            print "-"*75
-            print "L:"
-            print matrix
-            print "b:", RHSvector
+            print("-"*75)
+            print(self.title)
+            print("-"*75)
+            print("L:")
+            print(matrix)
+            print("b:", RHSvector)
 
         (f, mtxName) = tempfile.mkstemp(suffix='.mtx')
         matrix.exportMmf(mtxName)

@@ -96,12 +96,12 @@ so that it can be reused later.
 .. index:: TransientTerm, ExplicitDiffusionTerm, ImplicitSourceTerm
 
 >>> def buildPhaseEquation(phase, theta):
-...
+... 
 ...     mPhiVar = phase - 0.5 + temperature * phase * (1 - phase)
 ...     thetaMag = theta.old.grad.mag
 ...     implicitSource = mPhiVar * (phase - (mPhiVar < 0))
 ...     implicitSource += (2 * s + epsilon**2 * thetaMag) * thetaMag
-...
+... 
 ...     return TransientTerm(phaseTransientCoeff) == \
 ...               ExplicitDiffusionTerm(alpha**2) \
 ...               - ImplicitSourceTerm(implicitSource) \
@@ -180,7 +180,7 @@ We step the solution in time, plotting as we go if running interactively,
 
 The solution is compared against Ryo Kobayashi's test data
 
->>> print theta.allclose(testData, rtol=1e-7, atol=1e-7)
+>>> print(theta.allclose(testData, rtol=1e-7, atol=1e-7))
 1
 
 The following code shows how to restart a simulation from some saved
@@ -207,7 +207,7 @@ Step through half the time steps.
 We confirm that the solution has not yet converged to that given by
 Ryo Kobayashi's FORTRAN code:
 
->>> print theta.allclose(testData)
+>>> print(theta.allclose(testData))
 0
 
 We save the variables to disk.
@@ -234,7 +234,7 @@ and finish the iterations,
 
 The solution is compared against Ryo Kobayashi's test data
 
->>> print newTheta.allclose(testData, rtol=1e-7)
+>>> print(newTheta.allclose(testData, rtol=1e-7))
 1
 """
 __docformat__ = 'restructuredtext'
@@ -243,4 +243,5 @@ if __name__ == '__main__':
     import fipy.tests.doctestPlus
     exec(fipy.tests.doctestPlus._getScript())
 
-    raw_input('finished')
+    input('finished')
+

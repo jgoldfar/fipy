@@ -448,12 +448,12 @@ and we'll have much better luck if we also supply the Jacobian
 ...                             fprime=equilibriumJacobian) # doctest: +SCIPY
 ... except ImportError:
 ...     ClRoot = CsRoot = 0
-...     print "The SciPy library is not available to calculate the solidus and \
-... liquidus concentrations"
+...     print("The SciPy library is not available to calculate the solidus and \
+... liquidus concentrations")
 
->>> print Cl.allclose(ClRoot) # doctest: +SCIPY
+>>> print(Cl.allclose(ClRoot)) # doctest: +SCIPY
 1
->>> print Cs.allclose(CsRoot) # doctest: +SCIPY
+>>> print(Cs.allclose(CsRoot)) # doctest: +SCIPY
 1
 
 We plot the result against the sharp interface solution
@@ -503,7 +503,7 @@ We now use the ":meth:`~fipy.terms.term.Term.sweep`" method instead of
 ...     diffRes = diffusionEq.sweep(var=C, dt=dt, solver=solver)
 >>> if __name__ == '__main__':
 ...     viewer.plot()
-...     raw_input("Stationary phase field. Press <return> to proceed...")
+...     input("Stationary phase field. Press <return> to proceed...")
 
 .. image:: binary/stationary.*
    :width: 90%
@@ -514,19 +514,19 @@ We verify that the bulk phases have shifted to the predicted solidus and
 liquidus compositions
 
 >>> X = mesh.faceCenters[0]
->>> print Cs.allclose(C.faceValue[X.value==0], atol=2e-4)
+>>> print(Cs.allclose(C.faceValue[X.value==0], atol=2e-4))
 True
->>> print Cl.allclose(C.faceValue[X.value==L], atol=2e-4)
+>>> print(Cl.allclose(C.faceValue[X.value==L], atol=2e-4))
 True
 
 and that the phase fraction remains unchanged
 
->>> print fraction.allclose(phase.cellVolumeAverage, atol=2e-4)
+>>> print(fraction.allclose(phase.cellVolumeAverage, atol=2e-4))
 1
 
 while conserving mass overall
 
->>> print Cavg.allclose(0.5, atol=1e-8)
+>>> print(Cavg.allclose(0.5, atol=1e-8))
 1
 
 -----
@@ -589,7 +589,7 @@ time step of about :math:`\unit{10^{-5}}{\second}`.
 ...         viewer.plot()
 
 >>> if __name__ == '__main__':
-...     raw_input("Moving phase field. Press <return> to proceed...")
+...     input("Moving phase field. Press <return> to proceed...")
 
 .. image:: binary/moving.*
    :width: 90%
@@ -621,3 +621,4 @@ __docformat__ = 'restructuredtext'
 if __name__ == '__main__':
     import fipy.tests.doctestPlus
     exec(fipy.tests.doctestPlus._getScript())
+
