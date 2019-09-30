@@ -1,0 +1,15 @@
+name: ISP
+channels:
+  - guyer
+  - conda-forge
+dependencies:
+  - python=3
+  - jupyter
+  - numpy
+  - matplotlib
+  - scipy
+  - gmsh
+  - future
+#  - pip:
+#     - "--editable=git+/Users/jgoldfar/Documents/research/numpde/fipy#egg=fipy"
+
